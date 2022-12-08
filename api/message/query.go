@@ -5,6 +5,9 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	commonpb "github.com/NpoolPlatform/message/npool"
+
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/message"
 	messagemgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/message"
 
@@ -13,6 +16,8 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/google/uuid"
 )
 
 func (s *Server) GetMessages(ctx context.Context, in *npool.GetMessagesRequest) (*npool.GetMessagesResponse, error) {
@@ -21,7 +26,21 @@ func (s *Server) GetMessages(ctx context.Context, in *npool.GetMessagesRequest) 
 		limit = in.GetLimit()
 	}
 
-	infos, total, err := message1.GetMessages(ctx, &messagemgrpb.Conds{}, in.GetOffset(), limit)
+	if _, err := uuid.Parse(in.GetAppID()); err != nil {
+		logger.Sugar().Errorw("GetMessages", "AppID", in.GetAppID(), "error", err)
+		return &npool.GetMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	infos, total, err := message1.GetMessages(ctx, &messagemgrpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetAppID(),
+		},
+		Disabled: &commonpb.BoolVal{
+			Op:    cruder.EQ,
+			Value: in.GetDisabled(),
+		},
+	}, in.GetOffset(), limit)
 	if err != nil {
 		logger.Sugar().Errorw("GetMessages", "error", err)
 		return &npool.GetMessagesResponse{}, status.Error(codes.Internal, err.Error())
@@ -30,5 +49,22 @@ func (s *Server) GetMessages(ctx context.Context, in *npool.GetMessagesRequest) 
 	return &npool.GetMessagesResponse{
 		Infos: infos,
 		Total: total,
+	}, nil
+}
+
+func (s *Server) GetAppMessages(ctx context.Context, in *npool.GetAppMessagesRequest) (*npool.GetAppMessagesResponse, error) {
+	r, err := s.GetMessages(ctx, &npool.GetMessagesRequest{
+		AppID:    in.AppID,
+		Disabled: in.Disabled,
+		Offset:   in.Offset,
+		Limit:    in.Limit,
+	})
+	if err != nil {
+		return &npool.GetAppMessagesResponse{}, err
+	}
+
+	return &npool.GetAppMessagesResponse{
+		Infos: r.Infos,
+		Total: r.Total,
 	}, nil
 }
