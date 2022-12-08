@@ -39,7 +39,7 @@ func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageReque
 		return &npool.CreateMessageResponse{}, status.Error(codes.InvalidArgument, "Message is exist")
 	}
 
-	exist, err = langmgrcli.ExistLang(ctx, in.GetLangID())
+	exist, err = langmgrcli.ExistLang(ctx, in.GetTargetLangID())
 	if err != nil {
 		logger.Sugar().Errorw("CreateMessage", "error", err)
 		return &npool.CreateMessageResponse{}, status.Error(codes.InvalidArgument, err.Error())
@@ -61,7 +61,7 @@ func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageReque
 
 	req := &messagemgrpb.MessageReq{
 		AppID:     &in.AppID,
-		LangID:    &in.LangID,
+		LangID:    &in.TargetLangID,
 		MessageID: &in.MessageID,
 		Message:   &in.Message,
 		GetIndex:  in.GetIndex,
@@ -80,6 +80,23 @@ func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageReque
 
 	return &npool.CreateMessageResponse{
 		Info: info,
+	}, nil
+}
+
+func (s *Server) CreateAppMessage(ctx context.Context, in *npool.CreateAppMessageRequest) (*npool.CreateAppMessageResponse, error) {
+	r, err := s.CreateMessage(ctx, &npool.CreateMessageRequest{
+		AppID:        in.TargetAppID,
+		TargetLangID: in.TargetLangID,
+		MessageID:    in.MessageID,
+		Message:      in.Message,
+		GetIndex:     in.GetIndex,
+	})
+	if err != nil {
+		return &npool.CreateAppMessageResponse{}, err
+	}
+
+	return &npool.CreateAppMessageResponse{
+		Info: r.Info,
 	}, nil
 }
 
@@ -183,5 +200,31 @@ func (s *Server) CreateMessages(
 
 	return &npool.CreateMessagesResponse{
 		Infos: outs,
+	}, nil
+}
+
+func (s *Server) CreateAppMessages(
+	ctx context.Context,
+	in *npool.CreateAppMessagesRequest,
+) (
+	*npool.CreateAppMessagesResponse,
+	error,
+) {
+	infos := []*messagemgrpb.MessageReq{}
+	for _, info := range in.GetInfos() {
+		info.AppID = &in.TargetAppID
+		info.LangID = &in.TargetLangID
+		infos = append(infos, info)
+	}
+
+	r, err := s.CreateMessages(ctx, &npool.CreateMessagesRequest{
+		Infos: infos,
+	})
+	if err != nil {
+		return &npool.CreateAppMessagesResponse{}, err
+	}
+
+	return &npool.CreateAppMessagesResponse{
+		Infos: r.Infos,
 	}, nil
 }
