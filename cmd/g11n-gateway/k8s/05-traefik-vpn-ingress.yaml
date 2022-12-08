@@ -21,7 +21,7 @@ spec:
     - host: api.npool.top
       http: &http_rules
         paths:
-          - path: /api/g11n-gateway
+          - path: /api/g11n
             backend:
               serviceName: g11n-gateway
               servicePort: 50610

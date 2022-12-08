@@ -6,4 +6,4 @@ metadata:
 spec:
   stripPrefix:
     prefixes:
-      - /api/g11n-gateway
+      - /api/g11n
