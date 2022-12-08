@@ -3,14 +3,14 @@ package lang
 import (
 	"context"
 
-	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/lang"
+	langmgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/lang"
 	langmgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/lang"
 )
 
-func CreateLang(ctx context.Context, in *langmgrpb.LangReq) (*npool.Lang, error) {
-	return nil, nil
+func CreateLang(ctx context.Context, in *langmgrpb.LangReq) (*langmgrpb.Lang, error) {
+	return langmgrcli.CreateLang(ctx, in)
 }
 
-func CreateLangs(ctx context.Context, in []*langmgrpb.LangReq) ([]*npool.Lang, error) {
-	return nil, nil
+func CreateLangs(ctx context.Context, in []*langmgrpb.LangReq) ([]*langmgrpb.Lang, error) {
+	return langmgrcli.CreateLangs(ctx, in)
 }
