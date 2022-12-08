@@ -7,6 +7,7 @@ import (
 
 	"github.com/NpoolPlatform/g11n-gateway/api/country"
 	"github.com/NpoolPlatform/g11n-gateway/api/lang"
+	"github.com/NpoolPlatform/g11n-gateway/api/message"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -20,6 +21,7 @@ func Register(server grpc.ServiceRegistrar) {
 	g11n.RegisterGatewayServer(server, &Server{})
 	lang.Register(server)
 	country.Register(server)
+	message.Register(server)
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
@@ -30,6 +32,9 @@ func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOpt
 		return err
 	}
 	if err := country.RegisterGateway(mux, endpoint, opts); err != nil {
+		return err
+	}
+	if err := message.RegisterGateway(mux, endpoint, opts); err != nil {
 		return err
 	}
 	return nil
