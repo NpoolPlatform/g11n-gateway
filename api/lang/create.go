@@ -41,5 +41,18 @@ func (s *Server) CreateLang(ctx context.Context, in *npool.CreateLangRequest) (*
 }
 
 func (s *Server) CreateLangs(ctx context.Context, in *npool.CreateLangsRequest) (*npool.CreateLangsResponse, error) {
-	return nil, nil
+	if err := langmgrapi.Duplicate(in.GetInfos()); err != nil {
+		logger.Sugar().Errorf("CreateLangs", "error", err)
+		return &npool.CreateLangsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	infos, err := lang1.CreateLangs(ctx, in.GetInfos())
+	if err != nil {
+		logger.Sugar().Errorf("CreateLangs", "error", err)
+		return &npool.CreateLangsResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.CreateLangsResponse{
+		Infos: infos,
+	}, nil
 }

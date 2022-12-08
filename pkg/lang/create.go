@@ -10,3 +10,7 @@ import (
 func CreateLang(ctx context.Context, in *langmgrpb.LangReq) (*npool.Lang, error) {
 	return nil, nil
 }
+
+func CreateLangs(ctx context.Context, in []*langmgrpb.LangReq) ([]*npool.Lang, error) {
+	return nil, nil
+}

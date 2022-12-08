@@ -6,7 +6,7 @@ require (
 	github.com/NpoolPlatform/api-manager v0.0.0-20220826022307-d72866fe3ec0
 	github.com/NpoolPlatform/g11n-manager v0.0.0-20221208034535-3e2c1a7a5cb9
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20220927113434-7c153f087a8c
-	github.com/NpoolPlatform/message v0.0.0-20221208020524-7ad1f9f44f86
+	github.com/NpoolPlatform/message v0.0.0-20221208041638-a9f70470f7e1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
 	github.com/stretchr/testify v1.7.1
