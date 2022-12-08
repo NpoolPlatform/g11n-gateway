@@ -15,6 +15,8 @@ import (
 )
 
 func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageRequest) (*npool.UpdateMessageResponse, error) {
+	// TODO: check id belong to app id
+
 	if _, err := uuid.Parse(in.GetID()); err != nil {
 		logger.Sugar().Errorw("UpdateMessage", "ID", in.GetID(), "error", err)
 		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, err.Error())
@@ -43,5 +45,23 @@ func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageReque
 
 	return &npool.UpdateMessageResponse{
 		Info: info,
+	}, nil
+}
+
+func (s *Server) UpdateAppMessage(ctx context.Context, in *npool.UpdateAppMessageRequest) (*npool.UpdateAppMessageResponse, error) {
+	r, err := s.UpdateMessage(ctx, &npool.UpdateMessageRequest{
+		ID:        in.ID,
+		AppID:     in.TargetAppID,
+		MessageID: in.MessageID,
+		Message:   in.Message,
+		GetIndex:  in.GetIndex,
+		Disabled:  in.Disabled,
+	})
+	if err != nil {
+		return &npool.UpdateAppMessageResponse{}, err
+	}
+
+	return &npool.UpdateAppMessageResponse{
+		Info: r.Info,
 	}, nil
 }
