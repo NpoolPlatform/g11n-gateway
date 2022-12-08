@@ -65,7 +65,43 @@ func (s *Server) CreateLangs(ctx context.Context, in *npool.CreateLangsRequest) 
 		return &npool.CreateLangsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, err := lang1.CreateLangs(ctx, in.GetInfos())
+	langs := []string{}
+	for _, c := range in.GetInfos() {
+		langs = append(langs, c.GetLang())
+	}
+
+	infos, _, err := langmgrcli.GetLangs(ctx, &langmgrpb.Conds{
+		Langs: &commonpb.StringSliceVal{
+			Op:    cruder.IN,
+			Value: langs,
+		},
+	}, int32(0), int32(len(langs)))
+	if err != nil {
+		logger.Sugar().Errorw("CreateLangs", "error", err)
+		return &npool.CreateLangsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	reqs := []*langmgrpb.LangReq{}
+	for _, info := range in.GetInfos() {
+		exist := false
+		for _, info1 := range infos {
+			if info.GetLang() == info1.Lang {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			reqs = append(reqs, info)
+		}
+	}
+
+	if len(reqs) == 0 {
+		return &npool.CreateLangsResponse{
+			Infos: infos,
+		}, nil
+	}
+
+	infos, err = lang1.CreateLangs(ctx, in.GetInfos())
 	if err != nil {
 		logger.Sugar().Errorw("CreateLangs", "error", err)
 		return &npool.CreateLangsResponse{}, status.Error(codes.Internal, err.Error())
