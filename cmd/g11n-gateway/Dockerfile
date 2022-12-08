@@ -6,6 +6,6 @@ COPY g11n-gateway /app
 
 ENTRYPOINT ["/app/g11n-gateway"]
 
-EXPOSE 50330 50331 50332 50333
+EXPOSE 50610 50611 50612 50613
 
 CMD ["run"]

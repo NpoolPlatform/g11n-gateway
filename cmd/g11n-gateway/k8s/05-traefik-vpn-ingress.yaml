@@ -24,7 +24,7 @@ spec:
           - path: /api/g11n-gateway
             backend:
               serviceName: g11n-gateway
-              servicePort: 50330
+              servicePort: 50610
     - host: api.procyon.vip
       http: *http_rules
     - host: api.xpool.top
