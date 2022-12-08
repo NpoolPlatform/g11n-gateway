@@ -5,17 +5,36 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	commonpb "github.com/NpoolPlatform/message/npool"
+
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/lang"
 	langmgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/lang"
 
 	lang1 "github.com/NpoolPlatform/g11n-gateway/pkg/lang"
 	langmgrapi "github.com/NpoolPlatform/g11n-manager/api/lang"
+	langmgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/lang"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *Server) CreateLang(ctx context.Context, in *npool.CreateLangRequest) (*npool.CreateLangResponse, error) {
+	exist, err := langmgrcli.ExistLangConds(ctx, &langmgrpb.Conds{
+		Lang: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.Lang,
+		},
+	})
+	if err != nil {
+		logger.Sugar().Errorw("CreateLang", "error", err)
+		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if exist {
+		logger.Sugar().Errorw("CreateLang", "error", "Lang is exist")
+		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, "Lang is exist")
+	}
+
 	req := &langmgrpb.LangReq{
 		ID:    in.ID,
 		Lang:  &in.Lang,
@@ -25,13 +44,13 @@ func (s *Server) CreateLang(ctx context.Context, in *npool.CreateLangRequest) (*
 	}
 
 	if err := langmgrapi.Validate(req); err != nil {
-		logger.Sugar().Errorf("CreateLang", "error", err)
+		logger.Sugar().Errorw("CreateLang", "error", err)
 		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	info, err := lang1.CreateLang(ctx, req)
 	if err != nil {
-		logger.Sugar().Errorf("CreateLang", "error", err)
+		logger.Sugar().Errorw("CreateLang", "error", err)
 		return &npool.CreateLangResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -42,13 +61,13 @@ func (s *Server) CreateLang(ctx context.Context, in *npool.CreateLangRequest) (*
 
 func (s *Server) CreateLangs(ctx context.Context, in *npool.CreateLangsRequest) (*npool.CreateLangsResponse, error) {
 	if err := langmgrapi.Duplicate(in.GetInfos()); err != nil {
-		logger.Sugar().Errorf("CreateLangs", "error", err)
+		logger.Sugar().Errorw("CreateLangs", "error", err)
 		return &npool.CreateLangsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	infos, err := lang1.CreateLangs(ctx, in.GetInfos())
 	if err != nil {
-		logger.Sugar().Errorf("CreateLangs", "error", err)
+		logger.Sugar().Errorw("CreateLangs", "error", err)
 		return &npool.CreateLangsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
