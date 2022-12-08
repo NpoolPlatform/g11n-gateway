@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: g11n-gateway
+  namespace: kube-system
+  annotations:
+    "sidecar.jaegertracing.io/inject": "true"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: g11n-gateway
+  template:
+    metadata:
+      labels:
+        app: g11n-gateway
+    spec:
+      containers:
+        - name: g11n-gateway
+          image: uhub.service.ucloud.cn/entropypool/g11n-gateway:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: service-config
+              mountPath: /etc/G11nGateway
+          env:
+            - name: ENV_ENVIRONMENT_TARGET
+              valueFrom:
+                configMapKeyRef:
+                  name: system-environment
+                  key: environment.target
+            - name: ENV_CONSUL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: system-environment
+                  key: environment.consul_host
+            - name: ENV_CONSUL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: system-environment
+                  key: environment.consul_port
+            - name: ENV_CLUSTER_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+      volumes:
+        - name: service-config
+          configMap:
+            name: g11n-gateway-config
+            items:
+              - key: service-conf
+                path: G11nGateway.viper.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: g11n-gateway
+  namespace: kube-system
+spec:
+  ports:
+    - name: http
+      port: 50330
+      targetPort: 50330
+    - name: grpc
+      port: 50331
+      targetPort: 50331
+    - name: healthz
+      port: 50332
+      targetPort: 50332
+    - name: prometheus
+      port: 50333
+      targetPort: 50333
+  selector:
+    app: g11n-gateway
