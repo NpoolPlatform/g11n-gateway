@@ -65,7 +65,43 @@ func (s *Server) CreateCountries(ctx context.Context, in *npool.CreateCountriesR
 		return &npool.CreateCountriesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, err := country1.CreateCountries(ctx, in.GetInfos())
+	countries := []string{}
+	for _, c := range in.GetInfos() {
+		countries = append(countries, c.GetCountry())
+	}
+
+	infos, _, err := countrymgrcli.GetCountries(ctx, &countrymgrpb.Conds{
+		Countries: &commonpb.StringSliceVal{
+			Op:    cruder.IN,
+			Value: countries,
+		},
+	}, int32(0), int32(len(countries)))
+	if err != nil {
+		logger.Sugar().Errorw("CreateCountries", "error", err)
+		return &npool.CreateCountriesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	reqs := []*countrymgrpb.CountryReq{}
+	for _, info := range in.GetInfos() {
+		exist := false
+		for _, info1 := range infos {
+			if info.GetCountry() == info1.Country {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			reqs = append(reqs, info)
+		}
+	}
+
+	if len(reqs) == 0 {
+		return &npool.CreateCountriesResponse{
+			Infos: infos,
+		}, nil
+	}
+
+	infos, err = country1.CreateCountries(ctx, reqs)
 	if err != nil {
 		logger.Sugar().Errorw("CreateCountries", "error", err)
 		return &npool.CreateCountriesResponse{}, status.Error(codes.Internal, err.Error())
