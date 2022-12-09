@@ -1,3 +1,4 @@
+//nolint:dupl
 package migrator
 
 import (
@@ -74,6 +75,7 @@ func open(hostname string) (conn *sql.DB, err error) {
 }
 
 var countries = []*entintl.Country{}
+var langs = []*entintl.Lang{}
 
 func migrateCountry(ctx context.Context, cli *entintl.Client) error {
 	_countries, err := cli.
@@ -118,6 +120,49 @@ func migrateCountry(ctx context.Context, cli *entintl.Client) error {
 	})
 }
 
+func migrateLang(ctx context.Context, cli *entintl.Client) error {
+	_langs, err := cli.
+		Lang.
+		Query().
+		All(ctx)
+	if err != nil {
+		logger.Sugar().Errorw("migrateLang", "error", err)
+		return err
+	}
+
+	langs = _langs
+
+	return db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		infos, err := tx.
+			Lang.
+			Query().
+			Limit(1).
+			All(_ctx)
+		if err != nil {
+			return err
+		}
+		if len(infos) > 0 {
+			return nil
+		}
+
+		for _, lang := range langs {
+			_, err = tx.
+				Lang.
+				Create().
+				SetID(lang.ID).
+				SetLang(lang.Lang).
+				SetLogo(lang.Logo).
+				SetName(lang.Name).
+				SetShort(lang.Short).
+				Save(_ctx)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
 func Migrate(ctx context.Context) error {
 	if err := db.Init(); err != nil {
 		logger.Sugar().Errorw("Migrate", "error", err)
@@ -133,13 +178,16 @@ func Migrate(ctx context.Context) error {
 
 	cli := entintl.NewClient(entintl.Driver(entsql.OpenDB(dialect.MySQL, conn)))
 
-	// TODO: migrate country
 	if err := migrateCountry(ctx, cli); err != nil {
 		logger.Sugar().Errorw("Migrate", "error", err)
 		return err
 	}
 
-	// TODO: migrate lang
+	if err := migrateLang(ctx, cli); err != nil {
+		logger.Sugar().Errorw("Migrate", "error", err)
+		return err
+	}
+
 	// TODO: migrate appcountry
 	// TODO: migrate applang
 	// TODO: migrate message
