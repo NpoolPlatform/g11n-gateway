@@ -6,8 +6,8 @@ require (
 	entgo.io/ent v0.11.2
 	github.com/NpoolPlatform/api-manager v0.0.0-20220826022307-d72866fe3ec0
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20221111145037-f3db84fbe153
-	github.com/NpoolPlatform/g11n-manager v0.0.0-20221208141300-4f639cea010c
-	github.com/NpoolPlatform/g11n-middleware v0.0.0-20221208082154-0c75ff91bb02
+	github.com/NpoolPlatform/g11n-manager v0.0.0-20221209091926-57a27f651ceb
+	github.com/NpoolPlatform/g11n-middleware v0.0.0-20221209094126-abc1d10ec3a6
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20220927113434-7c153f087a8c
 	github.com/NpoolPlatform/internationalization v0.0.0-20221008093629-c2808a2a08da
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20220821121920-9559f5776d15
