@@ -15,12 +15,16 @@ import (
 	"github.com/NpoolPlatform/g11n-manager/pkg/db"
 	"github.com/NpoolPlatform/g11n-manager/pkg/db/ent"
 
+	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+
 	intlconst "github.com/NpoolPlatform/internationalization/pkg/message/const"
 
 	entintl "github.com/NpoolPlatform/internationalization/pkg/db/ent"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -163,6 +167,58 @@ func migrateLang(ctx context.Context, cli *entintl.Client) error {
 	})
 }
 
+func migrateAppCountry(ctx context.Context) error {
+	offset := int32(0)
+	const limit = int32(100)
+
+	for {
+		apps, _, err := appmwcli.GetApps(ctx, offset, limit)
+		if err != nil {
+			return err
+		}
+		if len(apps) == 0 {
+			return nil
+		}
+
+		checkExist := false
+
+		err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+			acs, err := tx.
+				AppCountry.
+				Query().
+				Limit(1).
+				All(_ctx)
+			if err != nil {
+				return err
+			}
+			if len(acs) > 0 && !checkExist {
+				checkExist = true
+				return nil
+			}
+
+			for _, app := range apps {
+				for _, country := range countries {
+					_, err := tx.
+						AppCountry.
+						Create().
+						SetAppID(uuid.MustParse(app.ID)).
+						SetCountryID(country.ID).
+						Save(_ctx)
+					if err != nil {
+						return err
+					}
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			return err
+		}
+
+		offset += limit
+	}
+}
+
 func Migrate(ctx context.Context) error {
 	if err := db.Init(); err != nil {
 		logger.Sugar().Errorw("Migrate", "error", err)
@@ -188,7 +244,11 @@ func Migrate(ctx context.Context) error {
 		return err
 	}
 
-	// TODO: migrate appcountry
+	if err := migrateAppCountry(ctx); err != nil {
+		logger.Sugar().Errorw("Migrate", "error", err)
+		return err
+	}
+
 	// TODO: migrate applang
 	// TODO: migrate message
 	return nil
