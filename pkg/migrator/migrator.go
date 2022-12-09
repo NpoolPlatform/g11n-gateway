@@ -80,6 +80,7 @@ func open(hostname string) (conn *sql.DB, err error) {
 
 var countries = []*entintl.Country{}
 var langs = []*entintl.Lang{}
+var appLangs = []*entintl.AppLang{}
 
 func migrateCountry(ctx context.Context, cli *entintl.Client) error {
 	_countries, err := cli.
@@ -219,6 +220,70 @@ func migrateAppCountry(ctx context.Context) error {
 	}
 }
 
+func migrateAppLang(ctx context.Context, cli *entintl.Client) error {
+	_appLangs, err := cli.
+		AppLang.
+		Query().
+		All(ctx)
+	if err != nil {
+		logger.Sugar().Errorw("migrateLang", "error", err)
+		return err
+	}
+
+	appLangs = _appLangs
+
+	offset := int32(0)
+	const limit = int32(100)
+
+	for {
+		apps, _, err := appmwcli.GetApps(ctx, offset, limit)
+		if err != nil {
+			return err
+		}
+		if len(apps) == 0 {
+			return nil
+		}
+
+		checkExist := false
+
+		err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+			acs, err := tx.
+				AppLang.
+				Query().
+				Limit(1).
+				All(_ctx)
+			if err != nil {
+				return err
+			}
+			if len(acs) > 0 && !checkExist {
+				checkExist = true
+				return nil
+			}
+
+			for _, app := range apps {
+				for _, appLang := range appLangs {
+					_, err := tx.
+						AppLang.
+						Create().
+						SetAppID(uuid.MustParse(app.ID)).
+						SetLangID(appLang.LangID).
+						SetMain(appLang.MainLang).
+						Save(_ctx)
+					if err != nil {
+						return err
+					}
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			return err
+		}
+
+		offset += limit
+	}
+}
+
 func Migrate(ctx context.Context) error {
 	if err := db.Init(); err != nil {
 		logger.Sugar().Errorw("Migrate", "error", err)
@@ -249,7 +314,11 @@ func Migrate(ctx context.Context) error {
 		return err
 	}
 
-	// TODO: migrate applang
+	if err := migrateAppLang(ctx, cli); err != nil {
+		logger.Sugar().Errorw("Migrate", "error", err)
+		return err
+	}
+
 	// TODO: migrate message
 	return nil
 }
