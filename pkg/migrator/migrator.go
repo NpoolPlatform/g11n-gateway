@@ -226,62 +226,82 @@ func migrateAppLang(ctx context.Context, cli *entintl.Client) error {
 		Query().
 		All(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("migrateLang", "error", err)
+		logger.Sugar().Errorw("migrateAppLang", "error", err)
 		return err
 	}
 
 	appLangs = _appLangs
 
-	offset := int32(0)
-	const limit = int32(100)
-
-	for {
-		apps, _, err := appmwcli.GetApps(ctx, offset, limit)
+	return db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		acs, err := tx.
+			AppLang.
+			Query().
+			Limit(1).
+			All(_ctx)
 		if err != nil {
 			return err
 		}
-		if len(apps) == 0 {
+		if len(acs) > 0 {
 			return nil
 		}
 
-		checkExist := false
-
-		err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-			acs, err := tx.
+		for _, appLang := range appLangs {
+			_, err := tx.
 				AppLang.
-				Query().
-				Limit(1).
-				All(_ctx)
+				Create().
+				SetAppID(appLang.AppID).
+				SetLangID(appLang.LangID).
+				SetMain(appLang.MainLang).
+				Save(_ctx)
 			if err != nil {
 				return err
 			}
-			if len(acs) > 0 && !checkExist {
-				checkExist = true
-				return nil
-			}
+		}
+		return nil
+	})
+}
 
-			for _, app := range apps {
-				for _, appLang := range appLangs {
-					_, err := tx.
-						AppLang.
-						Create().
-						SetAppID(uuid.MustParse(app.ID)).
-						SetLangID(appLang.LangID).
-						SetMain(appLang.MainLang).
-						Save(_ctx)
-					if err != nil {
-						return err
-					}
-				}
-			}
-			return nil
-		})
+func migrateMessage(ctx context.Context, cli *entintl.Client) error {
+	msgs, err := cli.
+		Message.
+		Query().
+		All(ctx)
+	if err != nil {
+		logger.Sugar().Errorw("migrateMessage", "error", err)
+		return err
+	}
+
+	return db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		acs, err := tx.
+			Message.
+			Query().
+			Limit(1).
+			All(_ctx)
 		if err != nil {
 			return err
 		}
+		if len(acs) > 0 {
+			return nil
+		}
 
-		offset += limit
-	}
+		for _, msg := range msgs {
+			_, err := tx.
+				Message.
+				Create().
+				SetID(msg.ID).
+				SetAppID(msg.AppID).
+				SetLangID(msg.LangID).
+				SetMessageID(msg.MessageID).
+				SetMessage(msg.Message).
+				SetGetIndex(0).
+				SetDisabled(false).
+				Save(_ctx)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 func Migrate(ctx context.Context) error {
@@ -319,6 +339,10 @@ func Migrate(ctx context.Context) error {
 		return err
 	}
 
-	// TODO: migrate message
+	if err := migrateMessage(ctx, cli); err != nil {
+		logger.Sugar().Errorw("Migrate", "error", err)
+		return err
+	}
+
 	return nil
 }
