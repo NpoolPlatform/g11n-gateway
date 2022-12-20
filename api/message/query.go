@@ -54,7 +54,7 @@ func (s *Server) GetMessages(ctx context.Context, in *npool.GetMessagesRequest) 
 
 func (s *Server) GetAppMessages(ctx context.Context, in *npool.GetAppMessagesRequest) (*npool.GetAppMessagesResponse, error) {
 	r, err := s.GetMessages(ctx, &npool.GetMessagesRequest{
-		AppID:    in.AppID,
+		AppID:    in.TargetAppID,
 		Disabled: in.Disabled,
 		Offset:   in.Offset,
 		Limit:    in.Limit,
