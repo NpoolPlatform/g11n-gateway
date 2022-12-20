@@ -40,7 +40,9 @@ func (s *Server) GetLangs(ctx context.Context, in *npool.GetLangsRequest) (*npoo
 
 func (s *Server) GetAppLangs(ctx context.Context, in *npool.GetAppLangsRequest) (*npool.GetAppLangsResponse, error) {
 	r, err := s.GetLangs(ctx, &npool.GetLangsRequest{
-		AppID: in.TargetAppID,
+		AppID:  in.TargetAppID,
+		Offset: in.GetOffset(),
+		Limit:  in.GetLimit(),
 	})
 	if err != nil {
 		return &npool.GetAppLangsResponse{}, err

@@ -40,7 +40,9 @@ func (s *Server) GetCountries(ctx context.Context, in *npool.GetCountriesRequest
 
 func (s *Server) GetAppCountries(ctx context.Context, in *npool.GetAppCountriesRequest) (*npool.GetAppCountriesResponse, error) {
 	r, err := s.GetCountries(ctx, &npool.GetCountriesRequest{
-		AppID: in.TargetAppID,
+		AppID:  in.TargetAppID,
+		Offset: in.GetOffset(),
+		Limit:  in.GetLimit(),
 	})
 	if err != nil {
 		return &npool.GetAppCountriesResponse{}, err
