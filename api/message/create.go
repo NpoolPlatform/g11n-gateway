@@ -25,6 +25,14 @@ import (
 
 func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageRequest) (*npool.CreateMessageResponse, error) {
 	exist, err := messagemgrcli.ExistMessageConds(ctx, &messagemgrpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetAppID(),
+		},
+		LangID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetTargetLangID(),
+		},
 		MessageID: &commonpb.StringVal{
 			Op:    cruder.EQ,
 			Value: in.GetMessageID(),
