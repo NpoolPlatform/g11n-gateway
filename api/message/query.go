@@ -31,7 +31,14 @@ func (s *Server) GetMessages(ctx context.Context, in *npool.GetMessagesRequest) 
 		return &npool.GetMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, total, err := message1.GetMessages(ctx, &messagemgrpb.Conds{
+	if in.LangID != nil {
+		if _, err := uuid.Parse(in.GetLangID()); err != nil {
+			logger.Sugar().Errorw("GetMessages", "LangID", in.GetLangID(), "error", err)
+			return &npool.GetMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		}
+	}
+
+	conds := &messagemgrpb.Conds{
 		AppID: &commonpb.StringVal{
 			Op:    cruder.EQ,
 			Value: in.GetAppID(),
@@ -40,7 +47,15 @@ func (s *Server) GetMessages(ctx context.Context, in *npool.GetMessagesRequest) 
 			Op:    cruder.EQ,
 			Value: in.GetDisabled(),
 		},
-	}, in.GetOffset(), limit)
+	}
+	if in.LangID != nil {
+		conds.LangID = &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetLangID(),
+		}
+	}
+
+	infos, total, err := message1.GetMessages(ctx, conds, in.GetOffset(), limit)
 	if err != nil {
 		logger.Sugar().Errorw("GetMessages", "error", err)
 		return &npool.GetMessagesResponse{}, status.Error(codes.Internal, err.Error())
