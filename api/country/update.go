@@ -20,21 +20,29 @@ func (s *Server) UpdateCountry(ctx context.Context, in *npool.UpdateCountryReque
 		return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if in.GetCountry() == "" {
-		logger.Sugar().Errorw("UpdateCountry", "Country", in.GetCountry())
-		return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Country is invalid")
+	if in.Country != nil {
+		if in.GetCountry() == "" {
+			logger.Sugar().Errorw("UpdateCountry", "Country", in.GetCountry())
+			return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Country is invalid")
+		}
 	}
-	if in.GetFlag() == "" {
-		logger.Sugar().Errorw("UpdateCountry", "Flag", in.GetFlag())
-		return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Flag is invalid")
+	if in.Flag != nil {
+		if in.GetFlag() == "" {
+			logger.Sugar().Errorw("UpdateCountry", "Flag", in.GetFlag())
+			return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Flag is invalid")
+		}
 	}
-	if in.GetCode() == "" {
-		logger.Sugar().Errorw("UpdateCountry", "Code", in.GetCode())
-		return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Code is invalid")
+	if in.Code != nil {
+		if in.GetCode() == "" {
+			logger.Sugar().Errorw("UpdateCountry", "Code", in.GetCode())
+			return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Code is invalid")
+		}
 	}
-	if in.GetShort() == "" {
-		logger.Sugar().Errorw("UpdateCountry", "Short", in.GetShort())
-		return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Short is invalid")
+	if in.Short != nil {
+		if in.GetShort() == "" {
+			logger.Sugar().Errorw("UpdateCountry", "Short", in.GetShort())
+			return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Short is invalid")
+		}
 	}
 
 	info, err := country1.UpdateCountry(ctx, &countrymgrpb.CountryReq{
