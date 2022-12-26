@@ -21,6 +21,8 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/google/uuid"
 )
 
 func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageRequest) (*npool.CreateMessageResponse, error) {
@@ -126,24 +128,35 @@ func (s *Server) CreateMessages(
 		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	msgIDs := []string{}
-	var appID string
-	var langID string
+	for _, info := range in.GetInfos() {
+		if info.GetAppID() != in.GetAppID() || info.GetLangID() != in.GetTargetLangID() {
+			return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, "Infos is invalid")
+		}
+	}
 
+	if _, err := uuid.Parse(in.GetAppID()); err != nil {
+		logger.Sugar().Errorw("CreateMessages", "AppID", in.GetAppID(), "error", err)
+		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	if _, err := uuid.Parse(in.GetTargetLangID()); err != nil {
+		logger.Sugar().Errorw("CreateMessages", "TargetLangID", in.GetTargetLangID(), "error", err)
+		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	msgIDs := []string{}
 	for _, info := range in.GetInfos() {
 		msgIDs = append(msgIDs, info.GetMessageID())
-		appID = info.GetAppID()
-		langID = info.GetLangID()
 	}
 
 	infos, _, err := messagemwcli.GetMessages(ctx, &messagemgrpb.Conds{
 		AppID: &commonpb.StringVal{
 			Op:    cruder.EQ,
-			Value: appID,
+			Value: in.GetAppID(),
 		},
 		LangID: &commonpb.StringVal{
 			Op:    cruder.EQ,
-			Value: langID,
+			Value: in.GetTargetLangID(),
 		},
 		MessageIDs: &commonpb.StringSliceVal{
 			Op:    cruder.IN,
@@ -180,7 +193,7 @@ func (s *Server) CreateMessages(
 		}, nil
 	}
 
-	exist, err := langmgrcli.ExistLang(ctx, langID)
+	exist, err := langmgrcli.ExistLang(ctx, in.GetTargetLangID())
 	if err != nil {
 		logger.Sugar().Errorw("CreateMessages", "error", err)
 		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
@@ -190,7 +203,7 @@ func (s *Server) CreateMessages(
 		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, "Lang isn't exist")
 	}
 
-	app, err := appmwcli.GetApp(ctx, appID)
+	app, err := appmwcli.GetApp(ctx, in.GetAppID())
 	if err != nil {
 		logger.Sugar().Errorw("CreateMessages", "error", err)
 		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
