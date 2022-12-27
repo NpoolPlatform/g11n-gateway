@@ -239,7 +239,9 @@ func (s *Server) CreateAppMessages(
 	}
 
 	r, err := s.CreateMessages(ctx, &npool.CreateMessagesRequest{
-		Infos: infos,
+		AppID:        in.GetTargetAppID(),
+		TargetLangID: in.GetTargetLangID(),
+		Infos:        infos,
 	})
 	if err != nil {
 		return &npool.CreateAppMessagesResponse{}, err
