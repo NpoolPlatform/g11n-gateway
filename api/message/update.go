@@ -23,7 +23,6 @@ import (
 )
 
 func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageRequest) (*npool.UpdateMessageResponse, error) {
-	// TODO: check id belong to app id
 	exist, err := messagemgrcli.ExistMessageConds(ctx, &messagemgrpb.Conds{
 		AppID: &commonpb.StringVal{
 			Op:    cruder.EQ,
@@ -56,6 +55,29 @@ func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageReque
 	}
 	if !exist {
 		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, "AppLang not exist")
+	}
+
+	if in.MessageID != nil {
+		exist, err := messagemgrcli.ExistMessageConds(ctx, &messagemgrpb.Conds{
+			AppID: &commonpb.StringVal{
+				Op:    cruder.EQ,
+				Value: in.GetAppID(),
+			},
+			ID: &commonpb.StringVal{
+				Op:    cruder.NEQ,
+				Value: in.GetID(),
+			},
+			MessageID: &commonpb.StringVal{
+				Op:    cruder.EQ,
+				Value: in.GetMessageID(),
+			},
+		})
+		if err != nil {
+			return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		}
+		if exist {
+			return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, "MessageID exist")
+		}
 	}
 
 	if _, err := uuid.Parse(in.GetID()); err != nil {
