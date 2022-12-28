@@ -23,6 +23,23 @@ import (
 )
 
 func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageRequest) (*npool.UpdateMessageResponse, error) {
+	if _, err := uuid.Parse(in.GetID()); err != nil {
+		logger.Sugar().Errorw("UpdateMessage", "ID", in.GetID(), "error", err)
+		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if _, err := uuid.Parse(in.GetAppID()); err != nil {
+		logger.Sugar().Errorw("UpdateMessage", "AppID", in.GetAppID(), "error", err)
+		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if in.GetMessageID() == "" {
+		logger.Sugar().Errorw("UpdateMessage", "MessageID", in.GetMessageID())
+		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, "MessageID is invalid")
+	}
+	if in.GetMessage() == "" {
+		logger.Sugar().Errorw("UpdateMessage", "Message", in.GetMessage())
+		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, "Message is invalid")
+	}
+
 	exist, err := messagemgrcli.ExistMessageConds(ctx, &messagemgrpb.Conds{
 		AppID: &commonpb.StringVal{
 			Op:    cruder.EQ,
@@ -78,20 +95,6 @@ func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageReque
 		if exist {
 			return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, "MessageID exist")
 		}
-	}
-
-	if _, err := uuid.Parse(in.GetID()); err != nil {
-		logger.Sugar().Errorw("UpdateMessage", "ID", in.GetID(), "error", err)
-		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	if in.GetMessageID() == "" {
-		logger.Sugar().Errorw("UpdateMessage", "MessageID", in.GetMessageID())
-		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, "MessageID is invalid")
-	}
-	if in.GetMessage() == "" {
-		logger.Sugar().Errorw("UpdateMessage", "Message", in.GetMessage())
-		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, "Message is invalid")
 	}
 
 	info, err := message1.UpdateMessage(ctx, &messagemgrpb.MessageReq{
