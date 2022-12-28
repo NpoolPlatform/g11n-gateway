@@ -82,17 +82,25 @@ func (s *Server) CreateLangs(ctx context.Context, in *npool.CreateLangsRequest) 
 	}
 
 	reqs := []*langmgrpb.LangReq{}
+	outs := []*langmgrpb.Lang{}
+
 	for _, info := range in.GetInfos() {
+		var _info1 *langmgrpb.Lang
+
 		exist := false
 		for _, info1 := range infos {
 			if info.GetLang() == info1.Lang {
+				_info1 = info1
 				exist = true
 				break
 			}
 		}
 		if !exist {
 			reqs = append(reqs, info)
+			continue
 		}
+
+		outs = append(outs, _info1)
 	}
 
 	if len(reqs) == 0 {
@@ -101,11 +109,13 @@ func (s *Server) CreateLangs(ctx context.Context, in *npool.CreateLangsRequest) 
 		}, nil
 	}
 
-	infos, err = lang1.CreateLangs(ctx, in.GetInfos())
+	infos, err = lang1.CreateLangs(ctx, reqs)
 	if err != nil {
 		logger.Sugar().Errorw("CreateLangs", "error", err)
 		return &npool.CreateLangsResponse{}, status.Error(codes.Internal, err.Error())
 	}
+
+	infos = append(infos, outs...)
 
 	return &npool.CreateLangsResponse{
 		Infos: infos,
