@@ -8,6 +8,12 @@ import (
 	appcountry1 "github.com/NpoolPlatform/g11n-gateway/pkg/appcountry"
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/appcountry"
 
+	appcountrymgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/appcountry"
+	appcountrymgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/appcountry"
+
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	commonpb "github.com/NpoolPlatform/message/npool"
+
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,7 +25,22 @@ func (s *Server) DeleteCountry(ctx context.Context, in *npool.DeleteCountryReque
 		return &npool.DeleteCountryResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	// TODO: check id belong to app id
+	exist, err := appcountrymgrcli.ExistCountryConds(ctx, &appcountrymgrpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetTargetAppID(),
+		},
+		ID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetID(),
+		},
+	})
+	if err != nil {
+		return &npool.DeleteCountryResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if !exist {
+		return &npool.DeleteCountryResponse{}, status.Error(codes.InvalidArgument, "AppCountry not exist")
+	}
 
 	info, err := appcountry1.DeleteCountry(ctx, in.GetID())
 	if err != nil {
