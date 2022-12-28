@@ -7,7 +7,12 @@ import (
 
 	country1 "github.com/NpoolPlatform/g11n-gateway/pkg/country"
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/country"
+
+	countrymgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/country"
 	countrymgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/country"
+
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	commonpb "github.com/NpoolPlatform/message/npool"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -43,6 +48,25 @@ func (s *Server) UpdateCountry(ctx context.Context, in *npool.UpdateCountryReque
 			logger.Sugar().Errorw("UpdateCountry", "Short", in.GetShort())
 			return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Short is invalid")
 		}
+	}
+
+	exist, err := countrymgrcli.ExistCountryConds(ctx, &countrymgrpb.Conds{
+		ID: &commonpb.StringVal{
+			Op:    cruder.NEQ,
+			Value: in.GetID(),
+		},
+		Country: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetCountry(),
+		},
+	})
+	if err != nil {
+		logger.Sugar().Errorw("UpdateCountry", "error", err)
+		return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if exist {
+		logger.Sugar().Errorw("UpdateCountry", "error", "Country is exist")
+		return &npool.UpdateCountryResponse{}, status.Error(codes.InvalidArgument, "Country is exist")
 	}
 
 	info, err := country1.UpdateCountry(ctx, &countrymgrpb.CountryReq{
