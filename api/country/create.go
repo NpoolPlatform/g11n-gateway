@@ -97,6 +97,7 @@ func (s *Server) CreateCountries(ctx context.Context, in *npool.CreateCountriesR
 		}
 		if !exist {
 			reqs = append(reqs, info)
+			continue
 		}
 
 		outs = append(outs, _info1)
