@@ -10,6 +10,7 @@ import (
 
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/message"
 	messagemgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/message"
+	messagemwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/message"
 
 	message1 "github.com/NpoolPlatform/g11n-gateway/pkg/message1"
 	messagemgrapi "github.com/NpoolPlatform/g11n-manager/api/message"
@@ -176,17 +177,25 @@ func (s *Server) CreateMessages(
 	}
 
 	msgs := []*messagemgrpb.MessageReq{}
+	_outs := []*messagemwpb.Message{}
+
 	for _, info := range in.GetInfos() {
 		exist := false
+		var _info1 *messagemwpb.Message
+
 		for _, info1 := range infos {
 			if info.GetMessageID() == info1.MessageID {
+				_info1 = info1
 				exist = true
 				break
 			}
 		}
 		if !exist {
 			msgs = append(msgs, info)
+			continue
 		}
+
+		_outs = append(_outs, _info1)
 	}
 
 	if len(msgs) == 0 {
@@ -198,6 +207,15 @@ func (s *Server) CreateMessages(
 		return &npool.CreateMessagesResponse{
 			Infos: outs,
 		}, nil
+	}
+
+	_outs1 := []*npool.Message{}
+	if len(_outs) > 0 {
+		_outs1, err = message1.Expand(ctx, _outs)
+		if err != nil {
+			logger.Sugar().Errorw("CreateMessages", "error", err)
+			return &npool.CreateMessagesResponse{}, status.Error(codes.Internal, err.Error())
+		}
 	}
 
 	exist, err := langmgrcli.ExistLang(ctx, in.GetTargetLangID())
@@ -225,6 +243,8 @@ func (s *Server) CreateMessages(
 		logger.Sugar().Errorw("CreateMessages", "error", err)
 		return &npool.CreateMessagesResponse{}, status.Error(codes.Internal, err.Error())
 	}
+
+	outs = append(outs, _outs1...)
 
 	return &npool.CreateMessagesResponse{
 		Infos: outs,
