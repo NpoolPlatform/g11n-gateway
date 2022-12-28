@@ -7,7 +7,15 @@ import (
 
 	message1 "github.com/NpoolPlatform/g11n-gateway/pkg/message1"
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/message"
+
+	messagemgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/message"
 	messagemgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/message"
+
+	applangmgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/applang"
+	applangmgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/applang"
+
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	commonpb "github.com/NpoolPlatform/message/npool"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -16,6 +24,39 @@ import (
 
 func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageRequest) (*npool.UpdateMessageResponse, error) {
 	// TODO: check id belong to app id
+	exist, err := messagemgrcli.ExistMessageConds(ctx, &messagemgrpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetAppID(),
+		},
+		ID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetID(),
+		},
+	})
+	if err != nil {
+		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if !exist {
+		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, "Message not exist")
+	}
+
+	exist, err = applangmgrcli.ExistLangConds(ctx, &applangmgrpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetAppID(),
+		},
+		LangID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetTargetLangID(),
+		},
+	})
+	if err != nil {
+		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if !exist {
+		return &npool.UpdateMessageResponse{}, status.Error(codes.InvalidArgument, "AppLang not exist")
+	}
 
 	if _, err := uuid.Parse(in.GetID()); err != nil {
 		logger.Sugar().Errorw("UpdateMessage", "ID", in.GetID(), "error", err)
@@ -50,12 +91,13 @@ func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageReque
 
 func (s *Server) UpdateAppMessage(ctx context.Context, in *npool.UpdateAppMessageRequest) (*npool.UpdateAppMessageResponse, error) {
 	r, err := s.UpdateMessage(ctx, &npool.UpdateMessageRequest{
-		ID:        in.ID,
-		AppID:     in.TargetAppID,
-		MessageID: in.MessageID,
-		Message:   in.Message,
-		GetIndex:  in.GetIndex,
-		Disabled:  in.Disabled,
+		ID:           in.GetID(),
+		AppID:        in.GetTargetAppID(),
+		TargetLangID: in.GetTargetLangID(),
+		MessageID:    in.MessageID,
+		Message:      in.Message,
+		GetIndex:     in.GetIndex,
+		Disabled:     in.Disabled,
 	})
 	if err != nil {
 		return &npool.UpdateAppMessageResponse{}, err

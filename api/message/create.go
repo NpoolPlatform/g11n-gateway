@@ -130,6 +130,13 @@ func (s *Server) CreateMessages(
 
 	for _, info := range in.GetInfos() {
 		if info.GetAppID() != in.GetAppID() || info.GetLangID() != in.GetTargetLangID() {
+			logger.Sugar().Errorw(
+				"CreateMessages",
+				"InfoAppID", info.GetAppID(),
+				"InAppID", in.GetAppID(),
+				"InfoLangID", info.GetLangID(),
+				"InLangID", in.GetTargetLangID(),
+			)
 			return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, "Infos is invalid")
 		}
 	}
