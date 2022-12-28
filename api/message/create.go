@@ -9,6 +9,7 @@ import (
 	commonpb "github.com/NpoolPlatform/message/npool"
 
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/message"
+	applangmgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/applang"
 	messagemgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/message"
 	messagemwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/message"
 
@@ -18,6 +19,7 @@ import (
 	messagemwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/message"
 
 	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+	applangmgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/applang"
 	langmgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/lang"
 
 	"google.golang.org/grpc/codes"
@@ -58,6 +60,25 @@ func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageReque
 	if !exist {
 		logger.Sugar().Errorw("CreateMessage", "error", "Lang isn't exist")
 		return &npool.CreateMessageResponse{}, status.Error(codes.InvalidArgument, "Lang isn't exist")
+	}
+
+	exist, err = applangmgrcli.ExistLangConds(ctx, &applangmgrpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetAppID(),
+		},
+		LangID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetTargetLangID(),
+		},
+	})
+	if err != nil {
+		logger.Sugar().Errorw("CreateMessages", "error", err)
+		return &npool.CreateMessageResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if !exist {
+		logger.Sugar().Errorw("CreateMessages", "error", "Lang isn't exist")
+		return &npool.CreateMessageResponse{}, status.Error(codes.InvalidArgument, "AppLang isn't exist")
 	}
 
 	app, err := appmwcli.GetApp(ctx, in.GetAppID())
@@ -226,6 +247,25 @@ func (s *Server) CreateMessages(
 	if !exist {
 		logger.Sugar().Errorw("CreateMessages", "error", "Lang isn't exist")
 		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, "Lang isn't exist")
+	}
+
+	exist, err = applangmgrcli.ExistLangConds(ctx, &applangmgrpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetAppID(),
+		},
+		LangID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetTargetLangID(),
+		},
+	})
+	if err != nil {
+		logger.Sugar().Errorw("CreateMessages", "error", err)
+		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if !exist {
+		logger.Sugar().Errorw("CreateMessages", "error", "Lang isn't exist")
+		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, "AppLang isn't exist")
 	}
 
 	app, err := appmwcli.GetApp(ctx, in.GetAppID())
