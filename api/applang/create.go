@@ -16,6 +16,9 @@ import (
 	applangmgrapi "github.com/NpoolPlatform/g11n-manager/api/applang"
 	applangmgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/applang"
 
+	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+	langmgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/lang"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -41,6 +44,25 @@ func (s *Server) CreateLang(ctx context.Context, in *npool.CreateLangRequest) (*
 	}
 
 	// TODO: check app and lang exist
+	app, err := appmwcli.GetApp(ctx, in.GetTargetAppID())
+	if err != nil {
+		logger.Sugar().Errorw("CreateLang", "error", err)
+		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if app == nil {
+		logger.Sugar().Errorw("CreateLang", "error", "App not exist")
+		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, "App not exist")
+	}
+
+	exist, err = langmgrcli.ExistLang(ctx, in.GetTargetLangID())
+	if err != nil {
+		logger.Sugar().Errorw("CreateLang", "error", err)
+		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if !exist {
+		logger.Sugar().Errorw("CreateLang", "error", "Lang not exist")
+		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, "Lang not exist")
+	}
 
 	req := &applangmgrpb.LangReq{
 		AppID:  &in.TargetAppID,
