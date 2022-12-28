@@ -82,10 +82,15 @@ func (s *Server) CreateCountries(ctx context.Context, in *npool.CreateCountriesR
 	}
 
 	reqs := []*countrymgrpb.CountryReq{}
+	outs := []*countrymgrpb.Country{}
+
 	for _, info := range in.GetInfos() {
 		exist := false
+		var _info1 *countrymgrpb.Country
+
 		for _, info1 := range infos {
 			if info.GetCountry() == info1.Country {
+				_info1 = info1
 				exist = true
 				break
 			}
@@ -93,6 +98,8 @@ func (s *Server) CreateCountries(ctx context.Context, in *npool.CreateCountriesR
 		if !exist {
 			reqs = append(reqs, info)
 		}
+
+		outs = append(outs, _info1)
 	}
 
 	if len(reqs) == 0 {
@@ -106,6 +113,8 @@ func (s *Server) CreateCountries(ctx context.Context, in *npool.CreateCountriesR
 		logger.Sugar().Errorw("CreateCountries", "error", err)
 		return &npool.CreateCountriesResponse{}, status.Error(codes.Internal, err.Error())
 	}
+
+	infos = append(infos, outs...)
 
 	return &npool.CreateCountriesResponse{
 		Infos: infos,
