@@ -43,10 +43,12 @@ func (s *Server) GetMessages(ctx context.Context, in *npool.GetMessagesRequest) 
 			Op:    cruder.EQ,
 			Value: in.GetAppID(),
 		},
-		Disabled: &commonpb.BoolVal{
+	}
+	if in.Disabled != nil {
+		conds.Disabled = &commonpb.BoolVal{
 			Op:    cruder.EQ,
 			Value: in.GetDisabled(),
-		},
+		}
 	}
 	if in.LangID != nil {
 		conds.LangID = &commonpb.StringVal{
