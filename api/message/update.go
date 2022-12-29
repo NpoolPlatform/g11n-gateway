@@ -80,6 +80,10 @@ func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageReque
 				Op:    cruder.EQ,
 				Value: in.GetAppID(),
 			},
+			LangID: &commonpb.StringVal{
+				Op:    cruder.EQ,
+				Value: in.GetTargetLangID(),
+			},
 			ID: &commonpb.StringVal{
 				Op:    cruder.NEQ,
 				Value: in.GetID(),
