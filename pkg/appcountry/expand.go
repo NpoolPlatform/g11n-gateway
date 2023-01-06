@@ -3,6 +3,7 @@ package appcountry
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/appcountry"
 	appcountrymwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/appcountry"
@@ -14,6 +15,10 @@ func expand(ctx context.Context, infos []*appcountrymwpb.Country) ([]*npool.Coun
 	if len(infos) == 0 {
 		return nil, nil
 	}
+
+	sort.Slice(infos, func(i, j int) bool {
+		return infos[i].Country > infos[j].Country
+	})
 
 	app, err := appmwcli.GetApp(ctx, infos[0].AppID)
 	if err != nil {
