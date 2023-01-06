@@ -6,11 +6,11 @@ require (
 	github.com/NpoolPlatform/api-manager v0.0.0-20220826022307-d72866fe3ec0
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20221111145037-f3db84fbe153
 	github.com/NpoolPlatform/g11n-manager v0.0.0-20221229075702-efa4287c989c
-	github.com/NpoolPlatform/g11n-middleware v0.0.0-20221229075840-21cf7687ea4b
+	github.com/NpoolPlatform/g11n-middleware v0.0.0-20230106094031-e6c9147c110b
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20220927113434-7c153f087a8c
 	github.com/NpoolPlatform/internationalization v0.0.0-20221008093629-c2808a2a08da
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
-	github.com/NpoolPlatform/message v0.0.0-20221226084708-65ce1b53d9f4
+	github.com/NpoolPlatform/message v0.0.0-20221230022626-0a77d1990d9d
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
