@@ -42,6 +42,26 @@ func (s *Server) CreateLang(ctx context.Context, in *npool.CreateLangRequest) (*
 		logger.Sugar().Errorw("CreateLang", "error", "Lang is exist")
 		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, "Lang is exist")
 	}
+	if in.GetMain() {
+		exist, err = applangmgrcli.ExistLangConds(ctx, &applangmgrpb.Conds{
+			AppID: &commonpb.StringVal{
+				Op:    cruder.EQ,
+				Value: in.GetTargetAppID(),
+			},
+			Main: &commonpb.BoolVal{
+				Op:    cruder.EQ,
+				Value: in.GetMain(),
+			},
+		})
+		if err != nil {
+			logger.Sugar().Errorw("CreateLang", "error", err)
+			return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		}
+		if exist {
+			logger.Sugar().Errorw("CreateLang", "error", "Main Lang is exist")
+			return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, "Main Lang is exist")
+		}
+	}
 
 	// TODO: check app and lang exist
 	app, err := appmwcli.GetApp(ctx, in.GetTargetAppID())
