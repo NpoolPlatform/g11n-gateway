@@ -24,7 +24,6 @@ require (
 
 require (
 	ariga.io/atlas v0.5.1-0.20220717122844-8593d7eb1a8e // indirect
-	cloud.google.com/go/compute v1.14.0 // indirect
 	entgo.io/ent v0.11.2 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
