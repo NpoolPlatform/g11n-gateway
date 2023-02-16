@@ -3,14 +3,14 @@ module github.com/NpoolPlatform/g11n-gateway
 go 1.17
 
 require (
-	github.com/NpoolPlatform/appuser-middleware v0.0.0-20221111145037-f3db84fbe153
-	github.com/NpoolPlatform/basal-middleware v0.0.0-20221228013048-951da3e0461c
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230216023722-ef86d576f6ab
+	github.com/NpoolPlatform/basal-middleware v0.0.0-20230216084721-169d177c07b9
 	github.com/NpoolPlatform/g11n-manager v0.0.0-20230210192822-999a11e167c8
 	github.com/NpoolPlatform/g11n-middleware v0.0.0-20230210193058-7c376766d884
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20221102072657-7fcc5e6f1012
 	github.com/NpoolPlatform/internationalization v0.0.0-20221008093629-c2808a2a08da
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
-	github.com/NpoolPlatform/message v0.0.0-20230210185231-91468dfbbbf6
+	github.com/NpoolPlatform/message v0.0.0-20230215131129-9b9e00221836
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
