@@ -12,7 +12,6 @@ import (
 	mysqlconst "github.com/NpoolPlatform/go-service-framework/pkg/mysql/const"
 	rabbitmqconst "github.com/NpoolPlatform/go-service-framework/pkg/rabbitmq/const"
 	redisconst "github.com/NpoolPlatform/go-service-framework/pkg/redis/const"
-	intlconst "github.com/NpoolPlatform/internationalization/pkg/message/const"
 
 	cli "github.com/urfave/cli/v2"
 )
@@ -32,7 +31,6 @@ func main() {
 		"./",
 		nil,
 		commands,
-		intlconst.ServiceName,
 		mysqlconst.MysqlServiceName,
 		rabbitmqconst.RabbitMQServiceName,
 		redisconst.RedisServiceName,
