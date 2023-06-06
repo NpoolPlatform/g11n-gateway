@@ -5,12 +5,16 @@ import (
 
 	applangmwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/applang"
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/applang"
-	applangmgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/applang"
 	applangmwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/applang"
 )
 
-func CreateLang(ctx context.Context, in *applangmgrpb.LangReq) (*npool.Lang, error) {
-	info, err := applangmwcli.CreateLang(ctx, in)
+func (h *Handler) CreateLang(ctx context.Context) (*npool.Lang, error) {
+	info, err := applangmwcli.CreateLang(ctx, &applangmwpb.LangReq{
+		ID:     h.ID,
+		AppID:  &h.AppID,
+		LangID: h.LangID,
+		Main:   h.Main,
+	})
 	if err != nil {
 		return nil, err
 	}

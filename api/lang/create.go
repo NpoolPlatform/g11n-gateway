@@ -6,51 +6,43 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
 
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/lang"
-	langmgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/lang"
+	langmwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/lang"
 
 	lang1 "github.com/NpoolPlatform/g11n-gateway/pkg/lang"
-	langmgrapi "github.com/NpoolPlatform/g11n-manager/api/lang"
-	langmgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/lang"
+	langmwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/lang"
+
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *Server) CreateLang(ctx context.Context, in *npool.CreateLangRequest) (*npool.CreateLangResponse, error) {
-	exist, err := langmgrcli.ExistLangConds(ctx, &langmgrpb.Conds{
-		Lang: &commonpb.StringVal{
-			Op:    cruder.EQ,
-			Value: in.Lang,
-		},
-	})
+	handler, err := lang1.NewHandler(
+		ctx,
+		lang1.WithLang(&in.Lang),
+		lang1.WithName(&in.Name),
+		lang1.WithLogo(&in.Logo),
+		lang1.WithShort(&in.Short),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("CreateLang", "error", err)
-		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-	if exist {
-		logger.Sugar().Errorw("CreateLang", "error", "Lang is exist")
-		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, "Lang is exist")
-	}
-
-	req := &langmgrpb.LangReq{
-		ID:    in.ID,
-		Lang:  &in.Lang,
-		Logo:  &in.Logo,
-		Name:  &in.Name,
-		Short: &in.Short,
-	}
-
-	if err := langmgrapi.Validate(req); err != nil {
-		logger.Sugar().Errorw("CreateLang", "error", err)
+		logger.Sugar().Errorw(
+			"CreateLang",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.CreateLangResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := lang1.CreateLang(ctx, req)
+	info, err := handler.CreateLang(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("CreateLang", "error", err)
+		logger.Sugar().Errorw(
+			"CreateCoin",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.CreateLangResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -60,8 +52,16 @@ func (s *Server) CreateLang(ctx context.Context, in *npool.CreateLangRequest) (*
 }
 
 func (s *Server) CreateLangs(ctx context.Context, in *npool.CreateLangsRequest) (*npool.CreateLangsResponse, error) {
-	if err := langmgrapi.Duplicate(in.GetInfos()); err != nil {
-		logger.Sugar().Errorw("CreateLangs", "error", err)
+	handler, err := lang1.NewHandler(
+		ctx,
+		lang1.WithReqs(in.GetInfos()),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"CreateLangs",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.CreateLangsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
@@ -70,8 +70,8 @@ func (s *Server) CreateLangs(ctx context.Context, in *npool.CreateLangsRequest) 
 		langs = append(langs, c.GetLang())
 	}
 
-	infos, _, err := langmgrcli.GetLangs(ctx, &langmgrpb.Conds{
-		Langs: &commonpb.StringSliceVal{
+	infos, _, err := langmwcli.GetLangs(ctx, &langmwpb.Conds{
+		Langs: &basetypes.StringSliceVal{
 			Op:    cruder.IN,
 			Value: langs,
 		},
@@ -81,11 +81,11 @@ func (s *Server) CreateLangs(ctx context.Context, in *npool.CreateLangsRequest) 
 		return &npool.CreateLangsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	reqs := []*langmgrpb.LangReq{}
-	outs := []*langmgrpb.Lang{}
+	reqs := []*langmwpb.LangReq{}
+	outs := []*langmwpb.Lang{}
 
 	for _, info := range in.GetInfos() {
-		var _info1 *langmgrpb.Lang
+		var _info1 *langmwpb.Lang
 
 		exist := false
 		for _, info1 := range infos {
@@ -109,15 +109,19 @@ func (s *Server) CreateLangs(ctx context.Context, in *npool.CreateLangsRequest) 
 		}, nil
 	}
 
-	infos, err = lang1.CreateLangs(ctx, reqs)
+	reqinfos, err := handler.CreateLangs(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("CreateLangs", "error", err)
+		logger.Sugar().Errorw(
+			"CreateLangs",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.CreateLangsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	infos = append(infos, outs...)
+	reqinfos = append(reqinfos, outs...)
 
 	return &npool.CreateLangsResponse{
-		Infos: infos,
+		Infos: reqinfos,
 	}, nil
 }

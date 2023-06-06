@@ -5,19 +5,19 @@ import (
 
 	appcountrymwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/appcountry"
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/appcountry"
-	appcountrymgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/appcountry"
+	appcountrymwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/appcountry"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
-func GetCountries(ctx context.Context, appID string, offset, limit int32) ([]*npool.Country, uint32, error) {
-	infos, total, err := appcountrymwcli.GetCountries(ctx, &appcountrymgrpb.Conds{
-		AppID: &commonpb.StringVal{
+func (h *Handler) GetCountries(ctx context.Context) ([]*npool.Country, uint32, error) {
+	infos, total, err := appcountrymwcli.GetCountries(ctx, &appcountrymwpb.Conds{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: appID,
+			Value: h.AppID,
 		},
-	}, offset, limit)
+	}, h.Offset, h.Limit)
 	if err != nil {
 		return nil, 0, err
 	}

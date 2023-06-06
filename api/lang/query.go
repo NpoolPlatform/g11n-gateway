@@ -6,9 +6,7 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/lang"
-	langmgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/lang"
 
-	constant "github.com/NpoolPlatform/g11n-gateway/pkg/const"
 	lang1 "github.com/NpoolPlatform/g11n-gateway/pkg/lang"
 
 	"google.golang.org/grpc/codes"
@@ -16,14 +14,27 @@ import (
 )
 
 func (s *Server) GetLangs(ctx context.Context, in *npool.GetLangsRequest) (*npool.GetLangsResponse, error) {
-	limit := constant.DefaultRowLimit
-	if in.GetLimit() > 0 {
-		limit = in.GetLimit()
+	handler, err := lang1.NewHandler(
+		ctx,
+		lang1.WithOffset(in.GetOffset()),
+		lang1.WithLimit(in.GetLimit()),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetLangs",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetLangsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, total, err := lang1.GetLangs(ctx, &langmgrpb.Conds{}, in.GetOffset(), limit)
+	infos, total, err := handler.GetLangs(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("GetLangs", "error", err)
+		logger.Sugar().Errorw(
+			"GetLangs",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetLangsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

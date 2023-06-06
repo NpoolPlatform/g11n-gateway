@@ -3,10 +3,10 @@ package lang
 import (
 	"context"
 
-	langmgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/lang"
-	langmgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/lang"
+	langmwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/lang"
+	langmwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/lang"
 )
 
-func GetLangs(ctx context.Context, in *langmgrpb.Conds, offset, limit int32) ([]*langmgrpb.Lang, uint32, error) {
-	return langmgrcli.GetLangs(ctx, in, offset, limit)
+func (h *Handler) GetLangs(ctx context.Context) ([]*langmwpb.Lang, uint32, error) {
+	return langmwcli.GetLangs(ctx, &langmwpb.Conds{}, h.Offset, h.Limit)
 }

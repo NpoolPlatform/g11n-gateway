@@ -5,61 +5,39 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
-
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/message"
-	messagemgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/message"
 
-	constant "github.com/NpoolPlatform/g11n-gateway/pkg/const"
 	message1 "github.com/NpoolPlatform/g11n-gateway/pkg/message1"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/google/uuid"
 )
 
 func (s *Server) GetMessages(ctx context.Context, in *npool.GetMessagesRequest) (*npool.GetMessagesResponse, error) {
-	limit := constant.DefaultRowLimit
-	if in.GetLimit() > 0 {
-		limit = in.GetLimit()
-	}
-
-	if _, err := uuid.Parse(in.GetAppID()); err != nil {
-		logger.Sugar().Errorw("GetMessages", "AppID", in.GetAppID(), "error", err)
+	hangler, err := message1.NewHandler(
+		ctx,
+		message1.WithAppID(&in.AppID),
+		message1.WithDisabled(in.Disabled),
+		message1.WithLangID(in.LangID),
+		message1.WithOffset(in.GetOffset()),
+		message1.WithLimit(in.GetLimit()),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetMessages",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if in.LangID != nil {
-		if _, err := uuid.Parse(in.GetLangID()); err != nil {
-			logger.Sugar().Errorw("GetMessages", "LangID", in.GetLangID(), "error", err)
-			return &npool.GetMessagesResponse{}, status.Error(codes.InvalidArgument, err.Error())
-		}
-	}
-
-	conds := &messagemgrpb.Conds{
-		AppID: &commonpb.StringVal{
-			Op:    cruder.EQ,
-			Value: in.GetAppID(),
-		},
-	}
-	if in.Disabled != nil {
-		conds.Disabled = &commonpb.BoolVal{
-			Op:    cruder.EQ,
-			Value: in.GetDisabled(),
-		}
-	}
-	if in.LangID != nil {
-		conds.LangID = &commonpb.StringVal{
-			Op:    cruder.EQ,
-			Value: in.GetLangID(),
-		}
-	}
-
-	infos, total, err := message1.GetMessages(ctx, conds, in.GetOffset(), limit)
+	infos, total, err := hangler.GetMessages(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("GetMessages", "error", err)
+		logger.Sugar().Errorw(
+			"GetMessages",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetMessagesResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

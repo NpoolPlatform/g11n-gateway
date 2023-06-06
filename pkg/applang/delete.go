@@ -8,8 +8,8 @@ import (
 	applangmwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/applang"
 )
 
-func DeleteLang(ctx context.Context, id string) (*npool.Lang, error) {
-	info, err := applangmwcli.DeleteLang(ctx, id)
+func (h *Handler) DeleteLang(ctx context.Context) (*npool.Lang, error) {
+	info, err := applangmwcli.DeleteLang(ctx, &applangmwpb.LangReq{ID: h.ID})
 	if err != nil {
 		return nil, err
 	}

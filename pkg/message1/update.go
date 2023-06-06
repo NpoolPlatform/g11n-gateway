@@ -5,16 +5,20 @@ import (
 
 	messagemwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/message"
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/message"
-	messagemgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/message"
 	messagemwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/message"
 )
 
-func UpdateMessage(ctx context.Context, in *messagemgrpb.MessageReq) (*npool.Message, error) {
-	info, err := messagemwcli.UpdateMessage(ctx, in)
+func (h *Handler) UpdateMessage(ctx context.Context) (*npool.Message, error) {
+	info, err := messagemwcli.UpdateMessage(ctx, &messagemwpb.MessageReq{
+		ID:        h.ID,
+		MessageID: h.MessageID,
+		Message:   h.Message,
+		Disabled:  h.Disabled,
+		GetIndex:  h.GetIndex,
+	})
 	if err != nil {
 		return nil, err
 	}
-
 	outs, err := Expand(ctx, []*messagemwpb.Message{info})
 	if err != nil {
 		return nil, err
