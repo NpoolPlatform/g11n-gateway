@@ -123,6 +123,9 @@ func WithReqs(reqs []*countrymw.CountryReq) func(context.Context, *Handler) erro
 					return err
 				}
 			}
+			if req.Country == nil || *req.Country == "" {
+				return fmt.Errorf("invalid country")
+			}
 		}
 		h.Reqs = reqs
 		return nil

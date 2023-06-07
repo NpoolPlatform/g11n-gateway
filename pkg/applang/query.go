@@ -13,11 +13,10 @@ import (
 
 func (h *Handler) GetLangs(ctx context.Context) ([]*npool.Lang, uint32, error) {
 	infos, total, err := applangmwcli.GetLangs(ctx, &applangmwpb.Conds{
-		AppID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: *h.AppID,
-		},
-	}, h.Offset, h.Limit)
+		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID}},
+		h.Offset,
+		h.Limit,
+	)
 	if err != nil {
 		return nil, 0, err
 	}

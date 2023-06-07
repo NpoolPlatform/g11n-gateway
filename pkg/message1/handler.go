@@ -140,12 +140,19 @@ func WithReqs(reqs []*messagemw.MessageReq) func(context.Context, *Handler) erro
 				if err != nil {
 					return err
 				}
+			} else {
+				return fmt.Errorf("invalid appid")
 			}
 			if req.LangID != nil {
 				_, err := uuid.Parse(*req.LangID)
 				if err != nil {
 					return err
 				}
+			} else {
+				return fmt.Errorf("invalid langid")
+			}
+			if req.MessageID == nil {
+				return fmt.Errorf("invalid messageid")
 			}
 		}
 		h.Reqs = reqs

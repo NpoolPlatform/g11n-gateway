@@ -121,6 +121,9 @@ func WithReqs(reqs []*langmw.LangReq) func(context.Context, *Handler) error {
 					return err
 				}
 			}
+			if req.Lang == nil || *req.Lang == "" {
+				return fmt.Errorf("invalid lang")
+			}
 		}
 		h.Reqs = reqs
 		return nil

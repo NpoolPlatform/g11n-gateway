@@ -13,11 +13,10 @@ import (
 
 func (h *Handler) GetCountries(ctx context.Context) ([]*npool.Country, uint32, error) {
 	infos, total, err := appcountrymwcli.GetCountries(ctx, &appcountrymwpb.Conds{
-		AppID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: *h.AppID,
-		},
-	}, h.Offset, h.Limit)
+		AppID: &basetypes.StringVal{Op: cruder.EQ, Value: *h.AppID}},
+		h.Offset,
+		h.Limit,
+	)
 	if err != nil {
 		return nil, 0, err
 	}
