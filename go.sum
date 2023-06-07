@@ -50,8 +50,8 @@ github.com/NpoolPlatform/appuser-middleware v0.0.0-20230513100509-b19f356ebd4b/g
 github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63 h1:wQ+crGIMDqv7919i5slVz8liCjBhCZz8xZxHWC3N8uA=
 github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63/go.mod h1:3sHDVUUQHRkZsCiBFI6CdCL2HWf3cO7/E2DZU3nHMfE=
 github.com/NpoolPlatform/g11n-manager v0.0.0-20230223031133-01fb857f1b94 h1:/bu69QAhRwm4HmWtEt7tzlj2BO/1DyAnpLWj7GRmzgw=
-github.com/NpoolPlatform/g11n-middleware v0.0.0-20230607090018-cef0a1a2920f h1:b6K2X0cLMedX4tGxoauNcKQs3yeIPkq4ziVOMVYsGiI=
-github.com/NpoolPlatform/g11n-middleware v0.0.0-20230607090018-cef0a1a2920f/go.mod h1:rkReCsElEYWHWezVi6ZWiYsLY57FqYPgc5IQDYaSg/o=
+github.com/NpoolPlatform/g11n-middleware v0.0.0-20230607121532-5286e0500e25 h1:m3rWmchjlxJ9qhmjLJD2VNXKbHq+L7Pu9h4ieB5P8N4=
+github.com/NpoolPlatform/g11n-middleware v0.0.0-20230607121532-5286e0500e25/go.mod h1:rkReCsElEYWHWezVi6ZWiYsLY57FqYPgc5IQDYaSg/o=
 github.com/NpoolPlatform/go-service-framework v0.0.0-20230509081417-267df92cab6d h1:IcjF038u7F+QFxP9D+MBZ0LLaWSaFaJ3VLRm0RzJMbY=
 github.com/NpoolPlatform/go-service-framework v0.0.0-20230509081417-267df92cab6d/go.mod h1:Kh7DMkWnYOMHxEKq7QfJqbxm1HaUPkhTNN74lfHQxyE=
 github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb h1:IAQOJ0xQWdJS1BnimNdM6GZMLgTL/FnIa8C8K4xffUA=

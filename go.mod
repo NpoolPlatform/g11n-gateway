@@ -21,7 +21,7 @@ require (
 )
 
 replace (
-	github.com/NpoolPlatform/g11n-middleware => github.com/NpoolPlatform/g11n-middleware v0.0.0-20230607090018-cef0a1a2920f
+	github.com/NpoolPlatform/g11n-middleware => github.com/NpoolPlatform/g11n-middleware v0.0.0-20230607121532-5286e0500e25
 	github.com/NpoolPlatform/message => github.com/NpoolPlatform/message v0.0.0-20230605101243-e46ce1c9d4cb
 )
 
