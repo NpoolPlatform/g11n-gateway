@@ -44,12 +44,15 @@ func WithID(id *string) func(context.Context, *Handler) error {
 
 func WithAppID(id *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		exist, err := appmwcli.ExistApp(ctx, *id)
+		if id == nil {
+			return nil
+		}
+		_app, err := appmwcli.GetApp(ctx, *id)
 		if err != nil {
 			return err
 		}
-		if !exist {
-			return fmt.Errorf("app not exist")
+		if _app == nil {
+			return fmt.Errorf("invalid app")
 		}
 		h.AppID = id
 		return nil
