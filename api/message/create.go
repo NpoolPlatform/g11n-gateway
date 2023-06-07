@@ -19,6 +19,9 @@ func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageReque
 		ctx,
 		message1.WithAppID(&in.AppID),
 		message1.WithLangID(&in.TargetLangID),
+		message1.WithMessageID(&in.MessageID),
+		message1.WithMessage(&in.Message),
+		message1.WithGetIndex(in.GetIndex),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -49,6 +52,9 @@ func (s *Server) CreateAppMessage(ctx context.Context, in *npool.CreateAppMessag
 		ctx,
 		message1.WithAppID(&in.AppID),
 		message1.WithLangID(&in.TargetLangID),
+		message1.WithMessageID(&in.MessageID),
+		message1.WithMessage(&in.Message),
+		message1.WithGetIndex(in.GetIndex),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
