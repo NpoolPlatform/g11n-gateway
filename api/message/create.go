@@ -7,7 +7,6 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/message"
-	messagemwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/message"
 
 	message1 "github.com/NpoolPlatform/g11n-gateway/pkg/message1"
 
@@ -74,17 +73,7 @@ func (s *Server) CreateAppMessage(ctx context.Context, in *npool.CreateAppMessag
 	}, nil
 }
 
-func (s *Server) CreateMessages(
-	ctx context.Context,
-	in *npool.CreateMessagesRequest,
-) (
-	*npool.CreateMessagesResponse,
-	error,
-) {
-	if len(in.GetInfos()) == 0 {
-		logger.Sugar().Errorw("CreateMessages", "error", "Infos is empty")
-		return &npool.CreateMessagesResponse{}, status.Error(codes.InvalidArgument, "Infos is empty")
-	}
+func (s *Server) CreateMessages(ctx context.Context, in *npool.CreateMessagesRequest) (*npool.CreateMessagesResponse, error) {
 	handler, err := message1.NewHandler(
 		ctx,
 		message1.WithReqs(in.GetInfos()),
@@ -109,27 +98,10 @@ func (s *Server) CreateMessages(
 	}, nil
 }
 
-func (s *Server) CreateAppMessages(
-	ctx context.Context,
-	in *npool.CreateAppMessagesRequest,
-) (
-	*npool.CreateAppMessagesResponse,
-	error,
-) {
-	if len(in.GetInfos()) == 0 {
-		logger.Sugar().Errorw("CreateMessages", "error", "Infos is empty")
-		return &npool.CreateAppMessagesResponse{}, status.Error(codes.InvalidArgument, "Infos is empty")
-	}
-	infos := []*messagemwpb.MessageReq{}
-	for _, info := range in.GetInfos() {
-		info.AppID = &in.TargetAppID
-		info.LangID = &in.TargetLangID
-		infos = append(infos, info)
-	}
-
+func (s *Server) CreateAppMessages(ctx context.Context, in *npool.CreateAppMessagesRequest) (*npool.CreateAppMessagesResponse, error) {
 	handler, err := message1.NewHandler(
 		ctx,
-		message1.WithReqs(infos),
+		message1.WithReqs(in.GetInfos()),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

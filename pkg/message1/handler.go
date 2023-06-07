@@ -128,6 +128,9 @@ func WithLimit(limit int32) func(context.Context, *Handler) error {
 
 func WithReqs(reqs []*messagemw.MessageReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if len(reqs) == 0 {
+			return fmt.Errorf("infos is empty")
+		}
 		for _, req := range reqs {
 			if req.ID != nil {
 				_, err := uuid.Parse(*req.ID)
