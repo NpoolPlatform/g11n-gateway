@@ -11,7 +11,7 @@ import (
 func (h *Handler) CreateLang(ctx context.Context) (*npool.Lang, error) {
 	info, err := applangmwcli.CreateLang(ctx, &applangmwpb.LangReq{
 		ID:     h.ID,
-		AppID:  &h.AppID,
+		AppID:  h.AppID,
 		LangID: h.LangID,
 		Main:   h.Main,
 	})

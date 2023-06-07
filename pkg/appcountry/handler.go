@@ -13,7 +13,7 @@ import (
 
 type Handler struct {
 	ID        *string
-	AppID     string
+	AppID     *string
 	CountryID *string
 	Offset    int32
 	Limit     int32
@@ -42,9 +42,9 @@ func WithID(id *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithAppID(id string) func(context.Context, *Handler) error {
+func WithAppID(id *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		exist, err := appmwcli.ExistApp(ctx, id)
+		exist, err := appmwcli.ExistApp(ctx, *id)
 		if err != nil {
 			return err
 		}

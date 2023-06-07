@@ -17,7 +17,7 @@ func (s *Server) DeleteLang(ctx context.Context, in *npool.DeleteLangRequest) (*
 	handler, err := applang1.NewHandler(
 		ctx,
 		applang1.WithID(&in.ID),
-		applang1.WithAppID(in.GetTargetAppID()),
+		applang1.WithAppID(&in.TargetAppID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

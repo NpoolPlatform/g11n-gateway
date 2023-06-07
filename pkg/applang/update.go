@@ -11,7 +11,7 @@ import (
 func (h *Handler) UpdateLang(ctx context.Context) (*npool.Lang, error) {
 	info, err := applangmwcli.UpdateLang(ctx, &applangmwpb.LangReq{
 		ID:    h.ID,
-		AppID: &h.AppID,
+		AppID: h.AppID,
 		Main:  h.Main,
 	})
 	if err != nil {

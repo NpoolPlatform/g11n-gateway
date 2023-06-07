@@ -17,7 +17,7 @@ func (s *Server) CreateCountry(ctx context.Context, in *npool.CreateCountryReque
 	handler, err := appcountry1.NewHandler(
 		ctx,
 		appcountry1.WithCountryID(&in.CountryID),
-		appcountry1.WithAppID(in.TargetAppID),
+		appcountry1.WithAppID(&in.TargetAppID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

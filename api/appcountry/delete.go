@@ -16,7 +16,7 @@ func (s *Server) DeleteCountry(ctx context.Context, in *npool.DeleteCountryReque
 	handler, err := appcountry1.NewHandler(
 		ctx,
 		appcountry1.WithID(&in.ID),
-		appcountry1.WithAppID(in.GetTargetAppID()),
+		appcountry1.WithAppID(&in.TargetAppID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -5,9 +5,6 @@ import (
 	"fmt"
 
 	constant "github.com/NpoolPlatform/g11n-gateway/pkg/const"
-	langmwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/lang"
-	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	langmw "github.com/NpoolPlatform/message/npool/g11n/mw/v1/lang"
 	"github.com/google/uuid"
 )
@@ -51,16 +48,7 @@ func WithLang(lang *string) func(context.Context, *Handler) error {
 		if lang == nil {
 			return nil
 		}
-		_lang, err := langmwcli.GetLangOnly(ctx, &langmw.Conds{
-			Lang: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: *lang,
-			},
-		})
-		if err != nil {
-			return err
-		}
-		if _lang == nil {
+		if *lang == "" {
 			return fmt.Errorf("invalid lang")
 		}
 		h.Lang = lang
