@@ -19,6 +19,8 @@ func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageReque
 		message1.WithAppID(&in.AppID),
 		message1.WithMessageID(in.MessageID),
 		message1.WithMessage(in.Message),
+		message1.WithGetIndex(in.GetIndex),
+		message1.WithDisabled(in.Disabled),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
