@@ -50,7 +50,7 @@ func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageReque
 func (s *Server) CreateAppMessage(ctx context.Context, in *npool.CreateAppMessageRequest) (*npool.CreateAppMessageResponse, error) {
 	handler, err := message1.NewHandler(
 		ctx,
-		message1.WithAppID(&in.AppID),
+		message1.WithAppID(&in.TargetAppID),
 		message1.WithLangID(&in.TargetLangID),
 		message1.WithMessageID(&in.MessageID),
 		message1.WithMessage(&in.Message),
@@ -107,7 +107,9 @@ func (s *Server) CreateMessages(ctx context.Context, in *npool.CreateMessagesReq
 func (s *Server) CreateAppMessages(ctx context.Context, in *npool.CreateAppMessagesRequest) (*npool.CreateAppMessagesResponse, error) {
 	handler, err := message1.NewHandler(
 		ctx,
-		message1.WithReqs(in.GetInfos()),
+		message1.WithAppID(&in.TargetAppID),
+		message1.WithLangID(&in.TargetLangID),
+		message1.WithAppReqs(in.GetInfos()),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

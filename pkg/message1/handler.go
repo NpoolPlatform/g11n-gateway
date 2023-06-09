@@ -74,7 +74,7 @@ func WithLangID(id *string) func(context.Context, *Handler) error {
 			return err
 		}
 		if _app == nil {
-			return fmt.Errorf("invalid app")
+			return fmt.Errorf("invalid langid")
 		}
 		h.LangID = id
 		return nil
@@ -159,6 +159,38 @@ func WithReqs(reqs []*messagemw.MessageReq) func(context.Context, *Handler) erro
 			}
 		}
 		h.Reqs = reqs
+		return nil
+	}
+}
+
+func WithAppReqs(reqs []*messagemw.MessageReq) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if len(reqs) == 0 {
+			return fmt.Errorf("infos is empty")
+		}
+		if h.AppID == nil || *h.AppID == "" {
+			return fmt.Errorf("invalid targetappid")
+		}
+		if h.LangID == nil || *h.LangID == "" {
+			return fmt.Errorf("invalid targetlangid")
+		}
+		_reqs := []*messagemw.MessageReq{}
+		for _, req := range reqs {
+			_req := req
+			if req.ID != nil {
+				_, err := uuid.Parse(*req.ID)
+				if err != nil {
+					return err
+				}
+			}
+			if req.MessageID == nil {
+				return fmt.Errorf("invalid messageid")
+			}
+			_req.AppID = h.AppID
+			_req.LangID = h.LangID
+			_reqs = append(_reqs, _req)
+		}
+		h.Reqs = _reqs
 		return nil
 	}
 }
