@@ -12,6 +12,7 @@ func (h *Handler) UpdateMessage(ctx context.Context) (*npool.Message, error) {
 	info, err := messagemwcli.UpdateMessage(ctx, &messagemwpb.MessageReq{
 		ID:        h.ID,
 		AppID:     h.AppID,
+		LangID:    h.LangID,
 		MessageID: h.MessageID,
 		Message:   h.Message,
 		Disabled:  h.Disabled,
