@@ -11,10 +11,14 @@ import (
 
 func (h *Handler) DeleteMessage(ctx context.Context) (*npool.Message, error) {
 	if h.ID == nil {
-		return nil, fmt.Errorf("invalid g11nmessageid")
+		return nil, fmt.Errorf("invalid id")
+	}
+	if h.AppID == nil {
+		return nil, fmt.Errorf("invalid appid")
 	}
 	info, err := messagemwcli.DeleteMessage(ctx, &messagemwpb.MessageReq{
-		ID: h.ID,
+		ID:    h.ID,
+		AppID: h.AppID,
 	})
 	if err != nil {
 		return nil, err
