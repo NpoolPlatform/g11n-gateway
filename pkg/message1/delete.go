@@ -2,18 +2,27 @@ package message
 
 import (
 	"context"
+	"fmt"
 
 	messagemwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/message"
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/message"
 	messagemwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/message"
 )
 
-func DeleteMessage(ctx context.Context, id string) (*npool.Message, error) {
-	info, err := messagemwcli.DeleteMessage(ctx, id)
+func (h *Handler) DeleteMessage(ctx context.Context) (*npool.Message, error) {
+	if h.ID == nil {
+		return nil, fmt.Errorf("invalid id")
+	}
+	if h.AppID == nil {
+		return nil, fmt.Errorf("invalid appid")
+	}
+	info, err := messagemwcli.DeleteMessage(ctx, &messagemwpb.MessageReq{
+		ID:    h.ID,
+		AppID: h.AppID,
+	})
 	if err != nil {
 		return nil, err
 	}
-
 	outs, err := Expand(ctx, []*messagemwpb.Message{info})
 	if err != nil {
 		return nil, err

@@ -3,14 +3,20 @@ package country
 import (
 	"context"
 
-	countrymgrcli "github.com/NpoolPlatform/g11n-manager/pkg/client/country"
-	countrymgrpb "github.com/NpoolPlatform/message/npool/g11n/mgr/v1/country"
+	countrymwcli "github.com/NpoolPlatform/g11n-middleware/pkg/client/country"
+	countrymwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/country"
 )
 
-func CreateCountry(ctx context.Context, in *countrymgrpb.CountryReq) (*countrymgrpb.Country, error) {
-	return countrymgrcli.CreateCountry(ctx, in)
+func (h *Handler) CreateCountry(ctx context.Context) (*countrymwpb.Country, error) {
+	return countrymwcli.CreateCountry(ctx, &countrymwpb.CountryReq{
+		ID:      h.ID,
+		Country: h.Country,
+		Flag:    h.Flag,
+		Code:    h.Code,
+		Short:   h.Short,
+	})
 }
 
-func CreateCountries(ctx context.Context, in []*countrymgrpb.CountryReq) ([]*countrymgrpb.Country, error) {
-	return countrymgrcli.CreateCountries(ctx, in)
+func (h *Handler) CreateCountries(ctx context.Context) ([]*countrymwpb.Country, error) {
+	return countrymwcli.CreateCountries(ctx, h.Reqs)
 }

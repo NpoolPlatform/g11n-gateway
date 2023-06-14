@@ -8,8 +8,8 @@ import (
 	appcountrymwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/appcountry"
 )
 
-func DeleteCountry(ctx context.Context, id string) (*npool.Country, error) {
-	info, err := appcountrymwcli.DeleteCountry(ctx, id)
+func (h *Handler) DeleteCountry(ctx context.Context) (*npool.Country, error) {
+	info, err := appcountrymwcli.DeleteCountry(ctx, &appcountrymwpb.CountryReq{ID: h.ID, AppID: h.AppID})
 	if err != nil {
 		return nil, err
 	}
