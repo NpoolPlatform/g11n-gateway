@@ -17,7 +17,7 @@ func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageReque
 		ctx,
 		message1.WithID(&in.ID),
 		message1.WithAppID(&in.AppID),
-		message1.WithLangID(&in.TargetLangID),
+		message1.WithLangID(in.TargetLangID),
 		message1.WithMessageID(in.MessageID),
 		message1.WithMessage(in.Message),
 		message1.WithGetIndex(in.GetIndex),
@@ -51,7 +51,7 @@ func (s *Server) UpdateAppMessage(ctx context.Context, in *npool.UpdateAppMessag
 	r, err := s.UpdateMessage(ctx, &npool.UpdateMessageRequest{
 		ID:           in.GetID(),
 		AppID:        in.GetTargetAppID(),
-		TargetLangID: in.GetTargetLangID(),
+		TargetLangID: in.TargetLangID,
 		MessageID:    in.MessageID,
 		Message:      in.Message,
 		GetIndex:     in.GetIndex,
