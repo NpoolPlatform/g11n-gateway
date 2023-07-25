@@ -25,7 +25,9 @@ spec:
             backend:
               serviceName: g11n-gateway
               servicePort: 50610
-    - host: api.procyon.vip
-      http: *http_rules
     - host: api.xpool.top
+      http: *http_rules
+    - host: api.development.npool.top
+      http: *http_rules
+    - host: api.jh-testing.npool.top
       http: *http_rules
