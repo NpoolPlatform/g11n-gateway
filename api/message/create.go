@@ -4,11 +4,9 @@ package message
 import (
 	"context"
 
+	message1 "github.com/NpoolPlatform/g11n-gateway/pkg/message"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-
 	npool "github.com/NpoolPlatform/message/npool/g11n/gw/v1/message"
-
-	message1 "github.com/NpoolPlatform/g11n-gateway/pkg/message1"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
