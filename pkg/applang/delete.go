@@ -9,7 +9,7 @@ import (
 )
 
 func (h *Handler) DeleteLang(ctx context.Context) (*npool.Lang, error) {
-	info, err := applangmwcli.DeleteLang(ctx, &applangmwpb.LangReq{ID: h.ID, AppID: h.AppID})
+	info, err := applangmwcli.DeleteLang(ctx, &applangmwpb.LangReq{EntID: h.EntID})
 	if err != nil {
 		return nil, err
 	}

@@ -16,9 +16,9 @@ import (
 func (s *Server) UpdateLang(ctx context.Context, in *npool.UpdateLangRequest) (*npool.UpdateLangResponse, error) {
 	handler, err := applang1.NewHandler(
 		ctx,
-		applang1.WithID(&in.ID),
-		applang1.WithAppID(&in.AppID),
-		applang1.WithMain(in.Main),
+		applang1.WithID(&in.ID, true),
+		applang1.WithAppID(&in.AppID, true),
+		applang1.WithMain(in.Main, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

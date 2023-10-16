@@ -10,7 +10,7 @@ import (
 
 func (h *Handler) CreateLang(ctx context.Context) (*npool.Lang, error) {
 	info, err := applangmwcli.CreateLang(ctx, &applangmwpb.LangReq{
-		ID:     h.ID,
+		EntID:  h.EntID,
 		AppID:  h.AppID,
 		LangID: h.LangID,
 		Main:   h.Main,

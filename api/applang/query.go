@@ -16,7 +16,7 @@ import (
 func (s *Server) GetLangs(ctx context.Context, in *npool.GetLangsRequest) (*npool.GetLangsResponse, error) {
 	handler, err := applang1.NewHandler(
 		ctx,
-		applang1.WithAppID(&in.AppID),
+		applang1.WithAppID(&in.AppID, true),
 		applang1.WithOffset(in.GetOffset()),
 		applang1.WithLimit(in.GetLimit()),
 	)
