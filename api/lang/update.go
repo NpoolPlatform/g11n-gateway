@@ -15,11 +15,11 @@ import (
 func (s *Server) UpdateLang(ctx context.Context, in *npool.UpdateLangRequest) (*npool.UpdateLangResponse, error) {
 	handler, err := lang1.NewHandler(
 		ctx,
-		lang1.WithID(&in.ID),
-		lang1.WithLang(in.Lang),
-		lang1.WithLogo(in.Logo),
-		lang1.WithName(in.Name),
-		lang1.WithShort(in.Short),
+		lang1.WithID(&in.ID, true),
+		lang1.WithLang(in.Lang, false),
+		lang1.WithLogo(in.Logo, false),
+		lang1.WithName(in.Name, false),
+		lang1.WithShort(in.Short, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

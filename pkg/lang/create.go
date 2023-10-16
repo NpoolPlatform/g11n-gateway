@@ -9,6 +9,7 @@ import (
 
 func (h *Handler) CreateLang(ctx context.Context) (*langmwpb.Lang, error) {
 	return langmwcli.CreateLang(ctx, &langmwpb.LangReq{
+		EntID: h.EntID,
 		Lang:  h.Lang,
 		Logo:  h.Logo,
 		Name:  h.Name,
