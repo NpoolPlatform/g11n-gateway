@@ -15,11 +15,11 @@ import (
 func (s *Server) UpdateCountry(ctx context.Context, in *npool.UpdateCountryRequest) (*npool.UpdateCountryResponse, error) {
 	handler, err := country1.NewHandler(
 		ctx,
-		country1.WithID(&in.ID),
-		country1.WithCountry(in.Country),
-		country1.WithCode(in.Code),
-		country1.WithFlag(in.Flag),
-		country1.WithShort(in.Short),
+		country1.WithID(&in.ID, true),
+		country1.WithCountry(in.Country, false),
+		country1.WithCode(in.Code, false),
+		country1.WithFlag(in.Flag, false),
+		country1.WithShort(in.Short, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

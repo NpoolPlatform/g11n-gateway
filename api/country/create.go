@@ -16,10 +16,11 @@ import (
 func (s *Server) CreateCountry(ctx context.Context, in *npool.CreateCountryRequest) (*npool.CreateCountryResponse, error) {
 	handler, err := country1.NewHandler(
 		ctx,
-		country1.WithCountry(&in.Country),
-		country1.WithFlag(&in.Flag),
-		country1.WithCode(&in.Code),
-		country1.WithShort(&in.Short),
+		country1.WithEntID(in.EntID, false),
+		country1.WithCountry(&in.Country, true),
+		country1.WithFlag(&in.Flag, true),
+		country1.WithCode(&in.Code, true),
+		country1.WithShort(&in.Short, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
