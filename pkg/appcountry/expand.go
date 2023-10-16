@@ -27,6 +27,7 @@ func expand(ctx context.Context, infos []*appcountrymwpb.Country) ([]*npool.Coun
 	for _, info := range infos {
 		outs = append(outs, &npool.Country{
 			ID:        info.ID,
+			EntID:     info.EntID,
 			AppID:     info.AppID,
 			AppName:   app.Name,
 			CountryID: info.CountryID,

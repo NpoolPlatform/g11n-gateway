@@ -9,7 +9,7 @@ import (
 )
 
 func (h *Handler) DeleteCountry(ctx context.Context) (*npool.Country, error) {
-	info, err := appcountrymwcli.DeleteCountry(ctx, &appcountrymwpb.CountryReq{ID: h.ID, AppID: h.AppID})
+	info, err := appcountrymwcli.DeleteCountry(ctx, &appcountrymwpb.CountryReq{EntID: h.EntID})
 	if err != nil {
 		return nil, err
 	}
