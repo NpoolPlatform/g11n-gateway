@@ -17,8 +17,7 @@ func (h *Handler) DeleteMessage(ctx context.Context) (*npool.Message, error) {
 		return nil, fmt.Errorf("invalid appid")
 	}
 	info, err := messagemwcli.DeleteMessage(ctx, &messagemwpb.MessageReq{
-		ID:    h.ID,
-		AppID: h.AppID,
+		ID: h.ID,
 	})
 	if err != nil {
 		return nil, err

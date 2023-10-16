@@ -14,13 +14,13 @@ import (
 func (s *Server) UpdateMessage(ctx context.Context, in *npool.UpdateMessageRequest) (*npool.UpdateMessageResponse, error) {
 	handler, err := message1.NewHandler(
 		ctx,
-		message1.WithID(&in.ID),
-		message1.WithAppID(&in.AppID),
-		message1.WithLangID(in.TargetLangID),
-		message1.WithMessageID(in.MessageID),
-		message1.WithMessage(in.Message),
-		message1.WithGetIndex(in.GetIndex),
-		message1.WithDisabled(in.Disabled),
+		message1.WithID(&in.ID, true),
+		message1.WithAppID(&in.AppID, true),
+		message1.WithLangID(in.TargetLangID, false),
+		message1.WithMessageID(in.MessageID, false),
+		message1.WithMessage(in.Message, false),
+		message1.WithGetIndex(in.GetIndex, false),
+		message1.WithDisabled(in.Disabled, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -43,6 +43,7 @@ func (h *queryHandler) formalize(ctx context.Context) ([]*npool.Message, error) 
 	for _, info := range h.infos {
 		_info := &npool.Message{
 			ID:        info.ID,
+			EntID:     info.EntID,
 			LangID:    info.LangID,
 			Lang:      info.Lang,
 			MessageID: info.MessageID,

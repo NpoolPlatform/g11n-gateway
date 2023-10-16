@@ -8,6 +8,7 @@ import (
 	messagemwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/message"
 )
 
+//nolint:dupl
 func (h *Handler) UpdateMessage(ctx context.Context) (*npool.Message, error) {
 	info, err := messagemwcli.UpdateMessage(ctx, &messagemwpb.MessageReq{
 		ID:        h.ID,

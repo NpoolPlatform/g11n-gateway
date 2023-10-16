@@ -15,8 +15,8 @@ import (
 func (s *Server) DeleteMessage(ctx context.Context, in *npool.DeleteMessageRequest) (*npool.DeleteMessageResponse, error) {
 	handler, err := message1.NewHandler(
 		ctx,
-		message1.WithID(&in.ID),
-		message1.WithAppID(&in.AppID),
+		message1.WithID(&in.ID, true),
+		message1.WithAppID(&in.AppID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -48,8 +48,8 @@ func (s *Server) DeleteAppMessage(ctx context.Context, in *npool.DeleteAppMessag
 	req.AppID = &in.TargetAppID
 	handler, err := message1.NewHandler(
 		ctx,
-		message1.WithID(req.ID),
-		message1.WithAppID(req.AppID),
+		message1.WithID(req.ID, true),
+		message1.WithAppID(req.AppID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
