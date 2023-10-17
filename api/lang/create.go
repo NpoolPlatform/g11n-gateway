@@ -16,7 +16,7 @@ import (
 func (s *Server) CreateLang(ctx context.Context, in *npool.CreateLangRequest) (*npool.CreateLangResponse, error) {
 	handler, err := lang1.NewHandler(
 		ctx,
-		lang1.WithEntID(in.EntID, true),
+		lang1.WithEntID(in.EntID, false),
 		lang1.WithLang(&in.Lang, true),
 		lang1.WithName(&in.Name, true),
 		lang1.WithLogo(&in.Logo, true),

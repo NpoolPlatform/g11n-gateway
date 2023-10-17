@@ -8,10 +8,8 @@ import (
 	messagemwpb "github.com/NpoolPlatform/message/npool/g11n/mw/v1/message"
 )
 
-//nolint:dupl
 func (h *Handler) CreateMessage(ctx context.Context) (*npool.Message, error) {
 	info, err := messagemwcli.CreateMessage(ctx, &messagemwpb.MessageReq{
-		EntID:     h.EntID,
 		AppID:     h.AppID,
 		LangID:    h.LangID,
 		MessageID: h.MessageID,
