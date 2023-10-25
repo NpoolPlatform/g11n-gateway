@@ -5,10 +5,10 @@ go 1.17
 require (
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20231011071633-e14f373f95cb
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20231011062124-7ea6e9549a66
-	github.com/NpoolPlatform/g11n-middleware v0.0.0-20231020020819-0550d757ddc4
+	github.com/NpoolPlatform/g11n-middleware v0.0.0-20231025075859-3f7195dc365c
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230930023319-e48074d9472e
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008051607-f64457cf6ab6
-	github.com/NpoolPlatform/message v0.0.0-20231020015307-23d262aa354a
+	github.com/NpoolPlatform/message v0.0.0-20231025075716-76b27c430ee1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
