@@ -16,7 +16,7 @@ import (
 func (s *Server) GetCountries(ctx context.Context, in *npool.GetCountriesRequest) (*npool.GetCountriesResponse, error) {
 	handler, err := appcountry1.NewHandler(
 		ctx,
-		appcountry1.WithAppID(&in.AppID),
+		appcountry1.WithAppID(&in.AppID, true),
 		appcountry1.WithOffset(in.GetOffset()),
 		appcountry1.WithLimit(in.GetLimit()),
 	)

@@ -9,7 +9,7 @@ import (
 
 func (h *Handler) CreateCountry(ctx context.Context) (*countrymwpb.Country, error) {
 	return countrymwcli.CreateCountry(ctx, &countrymwpb.CountryReq{
-		ID:      h.ID,
+		EntID:   h.EntID,
 		Country: h.Country,
 		Flag:    h.Flag,
 		Code:    h.Code,

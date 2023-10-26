@@ -27,6 +27,7 @@ func expand(ctx context.Context, infos []*applangmwpb.Lang) ([]*npool.Lang, erro
 	for _, info := range infos {
 		outs = append(outs, &npool.Lang{
 			ID:        info.ID,
+			EntID:     info.EntID,
 			AppID:     info.AppID,
 			AppName:   app.Name,
 			LangID:    info.LangID,

@@ -12,7 +12,8 @@ import (
 )
 
 type Handler struct {
-	ID        *string
+	ID        *uint32
+	EntID     *string
 	AppID     *string
 	LangID    *string
 	MessageID *string
@@ -34,22 +35,42 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
+func WithID(id *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
 			return nil
-		}
-		if _, err := uuid.Parse(*id); err != nil {
-			return err
 		}
 		h.ID = id
 		return nil
 	}
 }
 
-func WithAppID(id *string) func(context.Context, *Handler) error {
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
+			return nil
+		}
+		_, err := uuid.Parse(*id)
+		if err != nil {
+			return err
+		}
+		h.EntID = id
+		return nil
+	}
+}
+
+func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
 			return nil
 		}
 		_app, err := appmwcli.GetApp(ctx, *id)
@@ -64,9 +85,12 @@ func WithAppID(id *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithLangID(id *string) func(context.Context, *Handler) error {
+func WithLangID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {
+			if must {
+				return fmt.Errorf("invalid langid")
+			}
 			return nil
 		}
 		_app, err := langmwcli.GetLang(ctx, *id)
@@ -81,29 +105,53 @@ func WithLangID(id *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithMessageID(id *string) func(context.Context, *Handler) error {
+func WithMessageID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid messageid")
+			}
+			return nil
+		}
 		h.MessageID = id
 		return nil
 	}
 }
 
-func WithMessage(message *string) func(context.Context, *Handler) error {
+func WithMessage(message *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if message == nil {
+			if must {
+				return fmt.Errorf("invalid message")
+			}
+			return nil
+		}
 		h.Message = message
 		return nil
 	}
 }
 
-func WithGetIndex(getindex *uint32) func(context.Context, *Handler) error {
+func WithGetIndex(getindex *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if getindex == nil {
+			if must {
+				return fmt.Errorf("invalid getindex")
+			}
+			return nil
+		}
 		h.GetIndex = getindex
 		return nil
 	}
 }
 
-func WithDisabled(disabled *bool) func(context.Context, *Handler) error {
+func WithDisabled(disabled *bool, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if disabled == nil {
+			if must {
+				return fmt.Errorf("invalid disabled")
+			}
+			return nil
+		}
 		h.Disabled = disabled
 		return nil
 	}
@@ -132,8 +180,8 @@ func WithReqs(reqs []*messagemw.MessageReq) func(context.Context, *Handler) erro
 			return fmt.Errorf("infos is empty")
 		}
 		for _, req := range reqs {
-			if req.ID != nil {
-				_, err := uuid.Parse(*req.ID)
+			if req.EntID != nil {
+				_, err := uuid.Parse(*req.EntID)
 				if err != nil {
 					return err
 				}
@@ -177,8 +225,8 @@ func WithAppReqs(reqs []*messagemw.MessageReq) func(context.Context, *Handler) e
 		_reqs := []*messagemw.MessageReq{}
 		for _, req := range reqs {
 			_req := req
-			if req.ID != nil {
-				_, err := uuid.Parse(*req.ID)
+			if req.EntID != nil {
+				_, err := uuid.Parse(*req.EntID)
 				if err != nil {
 					return err
 				}

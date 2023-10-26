@@ -14,9 +14,9 @@ import (
 func (s *Server) GetMessages(ctx context.Context, in *npool.GetMessagesRequest) (*npool.GetMessagesResponse, error) {
 	hangler, err := message1.NewHandler(
 		ctx,
-		message1.WithAppID(&in.AppID),
-		message1.WithDisabled(in.Disabled),
-		message1.WithLangID(in.LangID),
+		message1.WithAppID(&in.AppID, true),
+		message1.WithDisabled(in.Disabled, false),
+		message1.WithLangID(in.LangID, false),
 		message1.WithOffset(in.GetOffset()),
 		message1.WithLimit(in.GetLimit()),
 	)

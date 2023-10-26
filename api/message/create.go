@@ -15,11 +15,11 @@ import (
 func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageRequest) (*npool.CreateMessageResponse, error) {
 	handler, err := message1.NewHandler(
 		ctx,
-		message1.WithAppID(&in.AppID),
-		message1.WithLangID(&in.TargetLangID),
-		message1.WithMessageID(&in.MessageID),
-		message1.WithMessage(&in.Message),
-		message1.WithGetIndex(in.GetIndex),
+		message1.WithAppID(&in.AppID, true),
+		message1.WithLangID(&in.TargetLangID, true),
+		message1.WithMessageID(&in.MessageID, true),
+		message1.WithMessage(&in.Message, true),
+		message1.WithGetIndex(in.GetIndex, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -48,11 +48,11 @@ func (s *Server) CreateMessage(ctx context.Context, in *npool.CreateMessageReque
 func (s *Server) CreateAppMessage(ctx context.Context, in *npool.CreateAppMessageRequest) (*npool.CreateAppMessageResponse, error) {
 	handler, err := message1.NewHandler(
 		ctx,
-		message1.WithAppID(&in.TargetAppID),
-		message1.WithLangID(&in.TargetLangID),
-		message1.WithMessageID(&in.MessageID),
-		message1.WithMessage(&in.Message),
-		message1.WithGetIndex(in.GetIndex),
+		message1.WithAppID(&in.TargetAppID, true),
+		message1.WithLangID(&in.TargetLangID, true),
+		message1.WithMessageID(&in.MessageID, true),
+		message1.WithMessage(&in.Message, true),
+		message1.WithGetIndex(in.GetIndex, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -105,8 +105,8 @@ func (s *Server) CreateMessages(ctx context.Context, in *npool.CreateMessagesReq
 func (s *Server) CreateAppMessages(ctx context.Context, in *npool.CreateAppMessagesRequest) (*npool.CreateAppMessagesResponse, error) {
 	handler, err := message1.NewHandler(
 		ctx,
-		message1.WithAppID(&in.TargetAppID),
-		message1.WithLangID(&in.TargetLangID),
+		message1.WithAppID(&in.TargetAppID, true),
+		message1.WithLangID(&in.TargetLangID, true),
 		message1.WithAppReqs(in.GetInfos()),
 	)
 	if err != nil {

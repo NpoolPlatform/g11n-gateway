@@ -10,7 +10,7 @@ import (
 
 func (h *Handler) CreateCountry(ctx context.Context) (*npool.Country, error) {
 	info, err := appcountrymwcli.CreateCountry(ctx, &appcountrymwpb.CountryReq{
-		ID:        h.ID,
+		EntID:     h.EntID,
 		AppID:     h.AppID,
 		CountryID: h.CountryID,
 	})
