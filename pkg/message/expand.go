@@ -28,6 +28,7 @@ func Expand(ctx context.Context, infos []*messagemwpb.Message) ([]*npool.Message
 		outs = append(outs, &npool.Message{
 			ID:        info.ID,
 			EntID:     info.EntID,
+			AppID:     info.AppID,
 			AppName:   app.Name,
 			LangID:    info.LangID,
 			Lang:      info.Lang,
