@@ -26,7 +26,7 @@ func (h *queryHandler) formalize(ctx context.Context) ([]*npool.Message, error) 
 	}
 
 	conds := &appmwpb.Conds{
-		IDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: appIDs},
+		EntIDs: &basetypes.StringSliceVal{Op: cruder.IN, Value: appIDs},
 	}
 
 	apps, _, err := appmwcli.GetApps(ctx, conds, 0, int32(len(appIDs)))
@@ -36,7 +36,7 @@ func (h *queryHandler) formalize(ctx context.Context) ([]*npool.Message, error) 
 
 	appMap := map[string]*appmwpb.App{}
 	for _, info := range apps {
-		appMap[info.ID] = info
+		appMap[info.EntID] = info
 	}
 
 	_infos := []*npool.Message{}
